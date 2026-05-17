@@ -110,6 +110,12 @@ A new `Outcome` entity, post-handoff, links forward from an accepted decision an
 
 The deciding-phase prompt now mandates a `dr_search_decisions` call per prospective topic *before* `dr_propose_decision`. Hits ≥ 0.85 either suppress the new DR or get cited via `related_decisions`. This is the operationalization of "agents should reuse prior art, not re-litigate" that the AgenticAKM literature names but doesn't ship.
 
+## Symphony alignment (April 2026)
+
+After this release we extended the system to align with [OpenAI's Symphony](https://github.com/openai/symphony) — the open-source orchestrator that turns project work into autonomous coding-agent runs. Our system became the **planning + outcomes layer**; Symphony became the **execution layer**. The wire between them is Linear (today) or a future filesystem tracker extension.
+
+See [Symphony alignment](symphony-alignment.md) for the staged plan; slice 1 (Symphony handoff target + `WORKFLOW.md` emitter) is shipped.
+
 ## Opportunities — future
 
 Out of scope for this release, on the medium-term roadmap:

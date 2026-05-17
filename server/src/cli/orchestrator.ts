@@ -270,17 +270,70 @@ async function advanceHandoff(opts: OrchestratorOptions): Promise<{ exitCode: nu
   success("Artifacts rendered.");
 
   const linearAvailable = Boolean(process.env.LINEAR_API_KEY);
-  let target: "linear" | "filesystem" = "filesystem";
+  let target: "linear" | "filesystem" | "symphony" = "filesystem";
   if (linearAvailable) {
-    const wantsLinear = await confirm(
-      "LINEAR_API_KEY detected. Push the plan to Linear?",
+    const wantsSymphony = await confirm(
+      "LINEAR_API_KEY detected. Hand off to Symphony (push to Linear + emit WORKFLOW.md for the Codex orchestrator)?",
       opts,
       true
     );
-    target = wantsLinear ? "linear" : "filesystem";
+    if (wantsSymphony) {
+      target = "symphony";
+    } else {
+      const wantsLinear = await confirm(
+        "Push to Linear only (no Symphony WORKFLOW.md)?",
+        opts,
+        true
+      );
+      target = wantsLinear ? "linear" : "filesystem";
+    }
   }
+  // When LINEAR_API_KEY is not set, target stays 'filesystem'. To emit a
+  // Symphony WORKFLOW.md without Linear, call dr_export_symphony directly via
+  // the MCP server — it accepts a placeholder slug.
 
-  if (target === "linear") {
+  if (target === "symphony") {
+    let teamId: string | undefined;
+    if (linearAvailable) {
+      teamId = await ask(
+        "Linear team ID (blank to skip Linear push):",
+        opts,
+        process.env.LINEAR_TEAM_ID ?? ""
+      );
+      if (teamId === "") teamId = undefined;
+    }
+    const proceed = await confirm(
+      teamId
+        ? `Push tasks to Linear team ${teamId} and emit WORKFLOW.md?`
+        : "Emit WORKFLOW.md without pushing to Linear?",
+      opts,
+      true
+    );
+    if (!proceed) {
+      warn("Symphony handoff cancelled. Project remains in 'handing-off'.");
+      return { exitCode: 0 };
+    }
+    const symRes = await callTool(opts.cwd, "dr_export_symphony", {
+      linear_team_id: teamId,
+      sign_off_by: "human",
+      sign_off_actor: "cli-user",
+    });
+    if (!symRes.ok) {
+      error(`Symphony handoff failed: ${(symRes.errors ?? []).join("; ")}`);
+      return { exitCode: 1 };
+    }
+    const data = symRes.data as {
+      workflow_path: string;
+      linear: { project_url?: string; issues_created: number } | null;
+    };
+    success(`Wrote ${data.workflow_path}`);
+    if (data.linear) {
+      success(`Pushed ${data.linear.issues_created} issues to Linear.`);
+      if (data.linear.project_url) info(`Linear project: ${data.linear.project_url}`);
+    } else {
+      info("No Linear push. Edit WORKFLOW.md's tracker.project_slug before running Symphony.");
+    }
+  } else if (target === "linear") {
     const teamId = await ask(
       "Linear team ID:",
       opts,

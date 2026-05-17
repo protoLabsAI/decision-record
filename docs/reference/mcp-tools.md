@@ -254,6 +254,30 @@ Push to Linear via the GraphQL API. Creates a Project, Issues per decision (labe
 | `dry_run` | boolean | Default `false`. |
 | `sign_off_by`, `sign_off_actor`, `sign_off_notes` | various | Sign-off metadata. |
 
+### `dr_export_symphony`
+
+Emit a Symphony-compatible `WORKFLOW.md` to the target repo and finalize handoff with `target: "symphony"`. Optionally push tasks to Linear first so the WORKFLOW.md targets the resulting Linear project. See [Handoff to Symphony](../how-to/handoff-to-symphony.md) for the full workflow.
+
+| Input | Type | Notes |
+|---|---|---|
+| `workflow_path` | string? | Where to write WORKFLOW.md. Defaults to `<cwd>/WORKFLOW.md`. Parent dirs are created. |
+| `linear_team_id` | string? | If present, push tasks to Linear before emitting WORKFLOW.md. |
+| `linear_api_key` | string? | Linear API token. Defaults to `$LINEAR_API_KEY`. Required when `linear_team_id` is set. |
+| `tracker_kind` | `"linear"` | Default `linear` (the only tracker the Symphony spec currently lists). |
+| `tracker_project_slug` | string? | Override the slug. Falls back to (a) just-pushed Linear slug, (b) prior Linear handoff's target_id, (c) `"CHANGEME"`. |
+| `tracker_api_key_var` | string | Env-var name Symphony reads at runtime. Default `LINEAR_API_KEY`. |
+| `tracker_endpoint` | string? | Override the GraphQL endpoint. |
+| `polling_interval_ms` | integer? | Default `30000`. |
+| `workspace_root` | string? | Default `./.symphony-workspaces`. |
+| `after_create_hook` | string? | Shell script Symphony runs once per workspace at creation time (typically `git clone`). |
+| `before_run_hook` | string? | Shell script Symphony runs before each turn. |
+| `max_concurrent_agents` | integer? | Default `5`. |
+| `max_turns` | integer? | Default `20`. |
+| `codex_command` | string? | Default `codex app-server`. |
+| `sign_off_by`, `sign_off_actor`, `sign_off_notes` | various | Sign-off metadata. |
+
+Returns `{ target: "symphony", workflow_path, tracker_project_slug, linear, decisions, tasks, project }`. The `handoff` record on the project includes `workflow_path` pointing at the emitted file.
+
 ## Where the schemas live
 
 Every tool's input is validated by Zod at the server. JSON Schema mirrors for external consumers live in [`../../schemas/`](../../schemas/). The Zod source of truth is at [`server/src/schemas/index.ts`](../../server/src/schemas/index.ts).

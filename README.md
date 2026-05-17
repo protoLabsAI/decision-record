@@ -2,7 +2,7 @@
 
 > An idea-to-MVP planning pipeline. Drives complex engineering work — code and architecture — through hard-gated phases that won't release a "ship-ready" plan until every decision is accepted and every task is decomposed.
 
-This repository is a Claude Code plugin + bundled MCP server. It runs inside a fresh or template repo, partners with a human and an AI agent, and produces an executable MVP plan: a scoped manifest, a set of accepted decision records, and a dependency-aware task graph. Output goes to Linear (primary) or stays as filesystem artifacts (fallback).
+This repository is a Claude Code plugin + bundled MCP server. It runs inside a fresh or template repo, partners with a human and an AI agent, and produces an executable MVP plan: a scoped manifest, a set of accepted decision records, and a dependency-aware task graph. Output goes to Linear, a [Symphony](https://github.com/openai/symphony)-compatible `WORKFLOW.md` for autonomous coding-agent runs, or stays as filesystem artifacts.
 
 This project is a derivative of [Joel Parker Henderson's canonical decision-record repo](https://github.com/joelparkerhenderson/decision-record). The canonical explanation of what a DR is and why it matters is preserved at [`docs/explanation/why-decision-records.md`](docs/explanation/why-decision-records.md). What this fork adds is **enforcement**: workflows, tools, and a state machine that make DRs a non-skippable part of planning with an agentic system.
 
@@ -12,19 +12,19 @@ This project is a derivative of [Joel Parker Henderson's canonical decision-reco
 - **A dynamic wizard.** The agent reads current state and decides the next question — no rigid form. It draws from a seed library of common decisions (language, runtime, auth, data store, etc.) when the territory is familiar.
 - **Antagonistic review.** Each gate gets reviewed by skeptical lenses (operational + strategic) before progressing.
 - **A living, machine-readable artifact set.** JSON per record, append-only event log, Markdown views, and a static HTML index. Future-proofed for a richer UI.
-- **Handoff to where work actually happens.** Push the completed plan to Linear, or stop at the filesystem.
+- **Handoff to where work actually happens.** Push the completed plan to Linear, emit a Symphony `WORKFLOW.md` for autonomous Codex orchestration, or stop at the filesystem.
 - **Per-project calibration.** Quick POC, MVP, and Full tiers — pick the gate strictness that matches the work. The system won't make you write SWOT analyses for a weekend hack.
 
 ## Status
 
-Active development — first usable cut is in. The pipeline is functional end-to-end (intake → scope → decisions → tasks → handoff to filesystem or Linear). A standalone CLI (`decision-record`) ships alongside the Claude Code plugin and MCP server.
+Active development. Pipeline is functional end-to-end (intake → scope → decisions → tasks → handoff to filesystem, Linear, or Symphony). Post-handoff outcomes + semantic search over decisions ship in the current cut. A standalone CLI (`decision-record`) ships alongside the Claude Code plugin and MCP server. See [Symphony alignment](docs/explanation/symphony-alignment.md) for the roadmap toward a full project management app.
 
 ## Documentation
 
 Docs follow the [Diátaxis](https://diataxis.fr) framework — start at [`docs/README.md`](docs/README.md) to orient.
 
 - **Brand new?** → [`docs/tutorials/your-first-plan.md`](docs/tutorials/your-first-plan.md) is a 15-minute end-to-end walkthrough.
-- **How do I do X?** → [`docs/how-to/`](docs/how-to/) (install, run the CLI, configure providers, hand off to Linear, calibrate gates).
+- **How do I do X?** → [`docs/how-to/`](docs/how-to/) (install, run the CLI, configure providers, hand off to Linear or Symphony, track outcomes, search decisions, calibrate gates).
 - **What's the exact spec?** → [`docs/reference/`](docs/reference/) (CLI flags, MCP tools, data model, gates).
 - **Why is it built this way?** → [`docs/explanation/`](docs/explanation/) (design rationale, the five phases, why decision records).
 

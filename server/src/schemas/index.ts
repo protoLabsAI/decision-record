@@ -82,12 +82,18 @@ export const SignOffSchema = z.object({
 export type SignOff = z.infer<typeof SignOffSchema>;
 
 export const HandoffRecordSchema = z.object({
-  target: z.enum(["linear", "filesystem"]),
+  target: z.enum(["linear", "filesystem", "symphony"]),
   target_id: z.string().optional(),
   target_url: z.string().url().optional(),
   exported_at: z.string().datetime(),
   issue_count: z.number().int().min(0).optional(),
   document_count: z.number().int().min(0).optional(),
+  workflow_path: z
+    .string()
+    .optional()
+    .describe(
+      "Path to the emitted WORKFLOW.md when target='symphony'. Repo-owned, read by the Symphony service."
+    ),
 });
 export type HandoffRecord = z.infer<typeof HandoffRecordSchema>;
 

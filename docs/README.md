@@ -29,6 +29,7 @@ The decision-record docs follow the [Diátaxis](https://diataxis.fr) framework �
 - [Run the CLI](how-to/run-the-cli.md) — idea, PRD, resume
 - [Configure LLM providers](how-to/configure-providers.md) — OpenAI, OpenRouter, Ollama, vLLM, LiteLLM
 - [Hand off to Linear](how-to/handoff-to-linear.md)
+- [Hand off to Symphony](how-to/handoff-to-symphony.md) — emit a Symphony `WORKFLOW.md` for autonomous coding-agent runs
 - [Calibrate gates](how-to/calibrate-gates.md) — `poc` / `mvp` / `full` + overrides
 - [Track outcomes](how-to/track-outcomes.md) — record post-handoff observations
 - [Search decisions](how-to/search-decisions.md) — semantic + substring search and reindexing
@@ -44,6 +45,7 @@ The decision-record docs follow the [Diátaxis](https://diataxis.fr) framework �
 - [Design rationale](explanation/design-rationale.md) — why filesystem, why hard gates, why lens-rotating skeptic
 - [The five phases](explanation/the-five-phases.md) — what each phase does and why this shape
 - [Research notes](explanation/research-notes.md) — broader DR/ADR ecosystem, prior art, and the rationale for outcomes + semantic search
+- [Symphony alignment](explanation/symphony-alignment.md) — how this system composes with OpenAI's Symphony orchestrator, and the staged plan for the full project management app
 
 ## Outside the docs tree
 
