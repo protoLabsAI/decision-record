@@ -22,7 +22,7 @@ The decision-record docs follow the [Diátaxis](https://diataxis.fr) framework �
 ## Index
 
 ### Tutorials
-- [Your first plan](tutorials/your-first-plan.md) — run the roguelike benchmark prompt end-to-end
+- [Your first plan](tutorials/your-first-plan.md) — run the pipeline end-to-end on a small idea
 
 ### How-to guides
 - [Install the plugin or CLI](how-to/install.md)

@@ -146,7 +146,7 @@ One JSON line per pipeline action. Append-only audit log.
 | Entity | Format | Example |
 |---|---|---|
 | Decision | `<4-digit>-<slug>` | `0003-define-the-agent-action-contract` |
-| Task | `T<4-digit>-<slug>` | `T0006-implement-the-tick-based-game-loop` |
-| Project | kebab-slug | `ai-driven-roguelike-poc` |
+| Task | `T<4-digit>-<slug>` | `T0006-implement-the-rate-limiter` |
+| Project | kebab-slug | `contact-list-deduper` |
 
 Slugs are 2–64 chars, lower-case alphanumerics + dashes, no leading/trailing dash.

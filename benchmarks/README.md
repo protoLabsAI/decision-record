@@ -2,22 +2,25 @@
 
 Canonical prompts we run against the decision-record planning pipeline to catch regressions as the system evolves.
 
-| Benchmark | Prompt | Effort | Purpose |
-|---|---|---|---|
-| [roguelike-ai-poc](roguelike-ai-poc/) | AI-driven roguelike where the agent plays the game | `poc` | Exercises all five pipeline phases on a small, well-bounded problem. The original dogfood case. |
+_(No public benchmarks committed yet. Add new ones as `benchmarks/<name>/` with a `prompt.md`, a `reference/` artifact snapshot, and a `run.sh` runner. See the structure described below.)_
 
-## How to run a benchmark
+## Benchmark layout
+
+Each benchmark lives in its own directory:
+
+```
+benchmarks/<name>/
+├── prompt.md      # the exact idea, effort level, and what "good output" looks like
+├── reference/     # a baseline artifact snapshot from a canonical run
+└── run.sh         # one-shot runner that fires the CLI against a fresh tmp dir
+```
+
+## How to run
 
 ```bash
 cd benchmarks/<name>
 ./run.sh
 ```
-
-Each benchmark has:
-
-- `prompt.md` — the exact idea, effort level, and what "good output" looks like
-- `reference/` — a baseline artifact snapshot from a canonical run
-- `run.sh` — one-shot runner that fires the CLI against a fresh tmp dir
 
 ## What we look for when comparing runs
 
