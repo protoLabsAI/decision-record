@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI-driven roguelike POC — Decision Record</title>
+<style>:root {
+  --bg: #fafafa;
+  --fg: #1a1a1a;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --accent: #4f46e5;
+  --status-rfc: #fbbf24;
+  --status-proposed: #60a5fa;
+  --status-accepted: #34d399;
+  --status-rejected: #f87171;
+  --status-deprecated: #9ca3af;
+  --status-superseded: #c084fc;
+  --task-open: #9ca3af;
+  --task-ready: #60a5fa;
+  --task-in_progress: #fbbf24;
+  --task-done: #34d399;
+  --task-blocked: #f87171;
+  --task-deferred: #c084fc;
+}
+* { box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; margin: 0; padding: 2rem; background: var(--bg); color: var(--fg); }
+h1, h2, h3 { margin-top: 1.5rem; }
+.container { max-width: 1100px; margin: 0 auto; }
+.header { border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+.meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; color: var(--muted); font-size: 0.9rem; }
+.meta b { color: var(--fg); }
+.pill { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; color: white; }
+.pill-rfc { background: var(--status-rfc); }
+.pill-proposed { background: var(--status-proposed); }
+.pill-accepted { background: var(--status-accepted); }
+.pill-rejected { background: var(--status-rejected); }
+.pill-deprecated { background: var(--status-deprecated); }
+.pill-superseded { background: var(--status-superseded); }
+.pill-task-open { background: var(--task-open); }
+.pill-task-ready { background: var(--task-ready); }
+.pill-task-in_progress { background: var(--task-in_progress); }
+.pill-task-done { background: var(--task-done); }
+.pill-task-blocked { background: var(--task-blocked); }
+.pill-task-deferred { background: var(--task-deferred); }
+table { width: 100%; border-collapse: collapse; margin-top: 1rem; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+th, td { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; vertical-align: top; }
+th { background: #f3f4f6; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+.scope { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+.scope-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+.scope-list section { background: #f9fafb; padding: 0.75rem; border-radius: 6px; }
+.scope-list h4 { margin: 0 0 0.5rem; font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.scope-list ul { margin: 0; padding-left: 1.25rem; }
+.scope-list li { margin: 0.15rem 0; font-size: 0.9rem; }
+.empty { color: var(--muted); font-style: italic; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.dep-list { color: var(--muted); font-size: 0.8rem; }
+.code { font-family: ui-monospace, "SF Mono", monospace; font-size: 0.85em; background: #f3f4f6; padding: 0.1rem 0.4rem; border-radius: 4px; }
+.handoff { background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+.handoff h3 { margin-top: 0; color: var(--accent); }
+.footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; }</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="header">
+    <div class="meta"><span class="code">ai-driven-roguelike-poc</span></div>
+    <h1>AI-driven roguelike POC</h1>
+    <div class="meta">
+      <span><b>Phase:</b> <span class="code">handed-off</span></span>
+      <span><b>Effort:</b> <span class="code">poc</span></span>
+      <span><b>Updated:</b> 2026-05-17T04:14:44.540Z</span>
+      <span><b>Decisions:</b> 4 (4 accepted)</span>
+      <span><b>Tasks:</b> 7 (0 done)</span>
+    </div>
+  </header>
+
+  <p>A minimal roguelike where the player primes an AI agent with a strategy, then the agent autonomously navigates a single ASCII-rendered room over a tick system until it wins the objective or dies. Goal: prove the agent-as-player concept with the smallest viable surface area.</p>
+
+  <div class="scope">
+    <h3>Scope</h3>
+    <div class="scope-list">
+      <section>
+        <h4>In scope</h4>
+        <ul><li>A 10×10 ASCII-rendered single room with walls (#), floor (.), player (@), exit (&gt;), and a hazard tile (X)</li><li>Tick-based game loop: each tick prints the frame, then queries the agent for one action</li><li>A small action vocabulary: move N/S/E/W and noop</li><li>Player has HP; stepping on hazard removes HP; reaching exit = win, HP=0 = death</li><li>Strategy prompt provided once at startup, fed to the agent as system prompt for every tick</li><li>LLM agent receives current frame + HP + tick number, returns a single action</li></ul>
+      </section><section>
+        <h4>Success criteria</h4>
+        <ul><li>A user can run a single command, supply a strategy prompt, and watch the agent play until win or death</li><li>Win and death paths both observed in manual playtests</li><li>Different strategy prompts produce visibly different agent behavior</li><li>End-to-end run completes in under 60 seconds wall time on a typical OpenAI API call</li></ul>
+      </section><section>
+        <h4>Out of scope</h4>
+        <ul><li>Multiple rooms, dungeon generation, procedural levels</li><li>Combat with enemies, NPCs, monsters</li><li>Inventory, items, equipment</li><li>Save/load, persistence</li><li>Visual UI beyond ASCII to terminal</li><li>Multiplayer, networking</li><li>Self-improving agent loops or RL training</li></ul>
+      </section><section>
+        <h4>Nice to have</h4>
+        <ul><li>Configurable room layout from a text file</li><li>Replay log written to disk for post-hoc inspection</li><li>A few preset strategy prompts to demo (cautious, greedy, exploratory)</li></ul>
+      </section>
+    </div>
+  </div>
+  <div class="handoff">
+    <h3>Handed off</h3>
+    <div class="meta">
+      <span><b>Target:</b> <span class="code">filesystem</span></span>
+      <span><b>At:</b> 2026-05-17T04:14:44.540Z</span>
+      
+      
+    </div>
+  </div>
+
+  <h2>Decisions</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Selected</th>
+        <th>Depends on</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="decisions/0001-choose-the-implementation-language.md"><span class="code">0001-choose-the-implementation-language</span></a></td>
+        <td>Choose the implementation language <span class="dep-list">[architecture]</span></td>
+        <td><span class="pill pill-accepted">accepted</span></td>
+        <td>Python</td>
+        <td><span class="empty">—</span></td>
+      </tr><tr>
+        <td><a href="decisions/0002-define-the-world-representation-and-renderer.md"><span class="code">0002-define-the-world-representation-and-renderer</span></a></td>
+        <td>Define the world representation and renderer <span class="dep-list">[data-model]</span></td>
+        <td><span class="pill pill-accepted">accepted</span></td>
+        <td>Tile-grid + entity dict</td>
+        <td><span class="empty">—</span></td>
+      </tr><tr>
+        <td><a href="decisions/0003-define-the-agent-action-contract.md"><span class="code">0003-define-the-agent-action-contract</span></a></td>
+        <td>Define the agent action contract <span class="dep-list">[architecture]</span></td>
+        <td><span class="pill pill-accepted">accepted</span></td>
+        <td>Tool-call (function calling) with one tool: do_action(direction)</td>
+        <td><span class="empty">—</span></td>
+      </tr><tr>
+        <td><a href="decisions/0004-define-the-tick-loop-and-termination-conditions.md"><span class="code">0004-define-the-tick-loop-and-termination-conditions</span></a></td>
+        <td>Define the tick loop and termination conditions <span class="dep-list">[architecture]</span></td>
+        <td><span class="pill pill-accepted">accepted</span></td>
+        <td>Synchronous loop with step cap</td>
+        <td><span class="empty">—</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Task graph</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Pri</th>
+        <th>Estimate</th>
+        <th>Depends on</th>
+        <th>Decision refs</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="tasks/T0001-bootstrap-repository.md"><span class="code">T0001-bootstrap-repository</span></a></td>
+        <td>Bootstrap repository</td>
+        <td><span class="pill pill-task-ready">ready</span></td>
+        <td><span class="code">p0</span></td>
+        <td>1h</td>
+        <td><span class="empty">—</span></td>
+        <td><a href="decisions/0001-choose-the-implementation-language.md" title="Choose the implementation language"><span class="code">0001-choose-the-implementation-language</span></a></td>
+      </tr><tr>
+        <td><a href="tasks/T0002-implement-world-module-tile-grid-entity-dict.md"><span class="code">T0002-implement-world-module-tile-grid-entity-dict</span></a></td>
+        <td>Implement world module (tile grid + entity dict)</td>
+        <td><span class="pill pill-task-open">open</span></td>
+        <td><span class="code">p0</span></td>
+        <td>2h</td>
+        <td><span class="code">T0001-bootstrap-repository</span></td>
+        <td><a href="decisions/0002-define-the-world-representation-and-renderer.md" title="Define the world representation and renderer"><span class="code">0002-define-the-world-representation-and-renderer</span></a></td>
+      </tr><tr>
+        <td><a href="tasks/T0003-implement-frame-renderer.md"><span class="code">T0003-implement-frame-renderer</span></a></td>
+        <td>Implement frame renderer</td>
+        <td><span class="pill pill-task-open">open</span></td>
+        <td><span class="code">p0</span></td>
+        <td>1h</td>
+        <td><span class="code">T0002-implement-world-module-tile-grid-entity-dict</span></td>
+        <td><a href="decisions/0002-define-the-world-representation-and-renderer.md" title="Define the world representation and renderer"><span class="code">0002-define-the-world-representation-and-renderer</span></a></td>
+      </tr><tr>
+        <td><a href="tasks/T0004-implement-openai-agent-client.md"><span class="code">T0004-implement-openai-agent-client</span></a></td>
+        <td>Implement OpenAI agent client</td>
+        <td><span class="pill pill-task-open">open</span></td>
+        <td><span class="code">p0</span></td>
+        <td>2h</td>
+        <td><span class="code">T0001-bootstrap-repository</span></td>
+        <td><a href="decisions/0003-define-the-agent-action-contract.md" title="Define the agent action contract"><span class="code">0003-define-the-agent-action-contract</span></a></td>
+      </tr><tr>
+        <td><a href="tasks/T0005-implement-action-handlers-and-termination-checks.md"><span class="code">T0005-implement-action-handlers-and-termination-checks</span></a></td>
+        <td>Implement action handlers and termination checks</td>
+        <td><span class="pill pill-task-open">open</span></td>
+        <td><span class="code">p0</span></td>
+        <td>1h</td>
+        <td><span class="code">T0002-implement-world-module-tile-grid-entity-dict</span></td>
+        <td><a href="decisions/0002-define-the-world-representation-and-renderer.md" title="Define the world representation and renderer"><span class="code">0002-define-the-world-representation-and-renderer</span></a></td>
+      </tr><tr>
+        <td><a href="tasks/T0006-implement-the-tick-based-game-loop.md"><span class="code">T0006-implement-the-tick-based-game-loop</span></a></td>
+        <td>Implement the tick-based game loop</td>
+        <td><span class="pill pill-task-open">open</span></td>
+        <td><span class="code">p0</span></td>
+        <td>2h</td>
+        <td><span class="code">T0003-implement-frame-renderer</span> <span class="code">T0004-implement-openai-agent-client</span> <span class="code">T0005-implement-action-handlers-and-termination-checks</span></td>
+        <td><a href="decisions/0004-define-the-tick-loop-and-termination-conditions.md" title="Define the tick loop and termination conditions"><span class="code">0004-define-the-tick-loop-and-termination-conditions</span></a> <a href="decisions/0002-define-the-world-representation-and-renderer.md" title="Define the world representation and renderer"><span class="code">0002-define-the-world-representation-and-renderer</span></a></td>
+      </tr><tr>
+        <td><a href="tasks/T0007-implement-cli-entry-script.md"><span class="code">T0007-implement-cli-entry-script</span></a></td>
+        <td>Implement CLI entry script</td>
+        <td><span class="pill pill-task-open">open</span></td>
+        <td><span class="code">p0</span></td>
+        <td>1h</td>
+        <td><span class="code">T0006-implement-the-tick-based-game-loop</span></td>
+        <td><a href="decisions/0001-choose-the-implementation-language.md" title="Choose the implementation language"><span class="code">0001-choose-the-implementation-language</span></a> <a href="decisions/0004-define-the-tick-loop-and-termination-conditions.md" title="Define the tick loop and termination conditions"><span class="code">0004-define-the-tick-loop-and-termination-conditions</span></a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer class="footer">
+    Generated by <a href="https://github.com/protoLabsAI/decision-record">decision-record</a> ·
+    Last render: 2026-05-17T04:14:44.544Z
+  </footer>
+
+</div>
+</body>
+</html>

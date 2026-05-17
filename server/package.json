@@ -5,7 +5,8 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "decision-record-mcp": "dist/index.js"
+    "decision-record-mcp": "dist/index.js",
+    "decision-record": "dist/cli.js"
   },
   "main": "dist/index.js",
   "exports": {
@@ -22,7 +23,9 @@
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/**/*.test.ts"
+    "test": "node --import tsx/esm --test tests/unit-*.test.ts tests/flow-*.test.ts 2>&1 | grep -v 'ExperimentalWarning' || true",
+    "test:unit": "node --import tsx/esm --test tests/unit-*.test.ts",
+    "test:flow": "node --import tsx/esm --test tests/flow-*.test.ts"
   },
   "engines": {
     "node": ">=20"
@@ -30,6 +33,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "nanoid": "^5.0.0",
+    "openai": "^6.38.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {

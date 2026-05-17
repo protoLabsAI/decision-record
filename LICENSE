@@ -22,8 +22,8 @@ SOFTWARE.
 
 ---
 
-The preserved canonical material in `docs/upstream-canon.md` and the
-canonical decision record template at `templates/canonical.md` derive from
+The preserved canonical material in `docs/explanation/why-decision-records.md`
+and the canonical decision record template at `templates/canonical.md` derive from
 the upstream work of Joel Parker Henderson:
 <https://github.com/joelparkerhenderson/decision-record>. That material
 should be attributed to its original author; see CITATION.cff.
