@@ -77,7 +77,7 @@ Full install instructions: [`docs/how-to/install.md`](docs/how-to/install.md). F
 
 ## Benchmarks
 
-We use a canonical prompt — an AI-driven roguelike POC — to spot regressions as the system evolves. See [`benchmarks/`](benchmarks/) for the prompt, expected output shape, and a `run.sh` to re-run it.
+Canonical prompts for regression-spotting as the system evolves live under [`benchmarks/`](benchmarks/). See that directory for the layout convention.
 
 ## Contributing
 

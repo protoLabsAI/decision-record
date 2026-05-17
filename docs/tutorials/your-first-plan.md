@@ -2,7 +2,7 @@
 
 By the end of this tutorial you will have used decision-record to turn a one-line idea into a complete, scoped, decision-backed, task-decomposed MVP plan — and you will have looked at every artifact the system produces. This takes about 15 minutes.
 
-We will use the **roguelike-ai-poc** benchmark idea — a small but real planning problem — so you can see the system handle something other than `hello world`.
+We'll use a small, neutral example idea — a CLI tool that deduplicates contact lists — so you can see the system handle something real without much setup.
 
 ## Before you start
 
@@ -24,7 +24,7 @@ You do **not** need the Claude Code plugin installed for this tutorial. We will 
 
 ## Step 1: Pick a working directory
 
-The system writes artifacts into a target project directory. We will create a fresh one:
+The system writes artifacts into a target project directory. Create a fresh one:
 
 ```bash
 mkdir -p ~/dev/my-first-plan
@@ -40,7 +40,7 @@ From the `decision-record/server/` directory:
 export OPENAI_API_KEY=sk-…   # if you haven't already
 
 node dist/cli.js \
-  --idea "a CLI tool that converts QuickBooks CSV exports into a normalized double-entry ledger" \
+  --idea "a CLI tool that reads CSVs of contacts and merges fuzzy duplicates" \
   --effort poc \
   --cwd ~/dev/my-first-plan
 ```
@@ -56,13 +56,13 @@ The CLI will print colored progress to stderr as each phase runs. You will see s
   Target: /Users/you/dev/my-first-plan
   Model: gpt-4o
 ━━━ Phase: Intake ━━━
-✓ Initialized 'a-cli-tool-that-converts-quickbooks-csv-export…' at effort_level=poc
+✓ Initialized 'a-cli-tool-that-reads-csvs-of-contacts…' at effort_level=poc
 ✓ Advanced: intake → scoping
 ━━━ Phase: Scoping ━━━
   Running scoping agent…
 ✓ Scoping agent finished (3 tool calls).
 ────────────────────────────────────────────────────────────
-Scope set. in_scope: read QuickBooks CSV, parse rows…
+Scope set. in_scope: read CSV, normalize fields, detect duplicates…
 …
 ────────────────────────────────────────────────────────────
 ✓ Advanced: scoping → deciding
@@ -121,7 +121,7 @@ Pick one. For example:
 cat ~/dev/my-first-plan/dr/decisions/0001-*.md
 ```
 
-You will see the full record: issue, positions considered, the selected position, the argument for why it won, the implications, and five lens reviews from the skeptic.
+You will see the full record: issue, positions considered, the selected position, the argument for why it won, the implications, and (under `mvp`/`full` presets) lens reviews from the skeptic.
 
 ```bash
 cat ~/dev/my-first-plan/dr/decisions/0001-*.json | jq .
