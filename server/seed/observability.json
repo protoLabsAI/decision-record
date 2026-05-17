@@ -1,0 +1,68 @@
+{
+  "name": "observability",
+  "title": "Choose the observability stack",
+  "template_variant": "architecture",
+  "description": "Pick logging, metrics, and tracing tools. Decide what's emitted, retention windows, and who has access.",
+  "tags": ["operations", "reliability", "delivery"],
+  "keywords": [
+    "observability",
+    "logging",
+    "metrics",
+    "tracing",
+    "telemetry",
+    "datadog",
+    "grafana",
+    "prometheus",
+    "loki",
+    "honeycomb",
+    "sentry",
+    "axiom",
+    "opentelemetry"
+  ],
+  "starter": {
+    "summary": "Decide how production behavior is observed and debugged.",
+    "issue": "Observability gaps don't matter until they do — usually at 2am during an incident. Decide the stack and bake it in from day one.",
+    "assumptions": [
+      "Deployment target is chosen.",
+      "Team has some incident-response experience."
+    ],
+    "constraints": [
+      "Budget (Datadog and Honeycomb get expensive quickly).",
+      "Data residency requirements.",
+      "Team's comfort with structured logs vs unstructured."
+    ],
+    "positions": [
+      {
+        "title": "Datadog (all-in-one SaaS)",
+        "description": "APM, logs, metrics, errors in one place.",
+        "pros": ["Single pane of glass", "Mature integrations", "Strong APM"],
+        "cons": ["Expensive at scale", "Vendor lock-in", "Steep volume-based pricing"]
+      },
+      {
+        "title": "Grafana stack (Loki + Prometheus + Tempo)",
+        "description": "Self-hosted or Grafana Cloud. Open-source-friendly.",
+        "pros": ["Cheaper at scale", "Open source", "Composable"],
+        "cons": ["More setup", "Each piece needs config", "Manual integrations"]
+      },
+      {
+        "title": "Honeycomb (event-based, tracing-first)",
+        "description": "High-cardinality observability. Excellent for distributed systems debugging.",
+        "pros": ["Best-in-class tracing UX", "High-cardinality queries", "BubbleUp is unmatched for outlier finding"],
+        "cons": ["Pricing scales with event volume", "Less of a 'metrics dashboards' fit", "Smaller ecosystem"]
+      },
+      {
+        "title": "Platform-native + Sentry for errors",
+        "description": "Use the hosting platform's built-in logs/metrics (Vercel, Fly, CloudWatch) plus Sentry for error tracking.",
+        "pros": ["Zero extra setup", "Cheap or free at small scale", "Sentry's error UX is excellent"],
+        "cons": ["Limited query power", "Hard to correlate across logs/metrics/traces", "Vendor lock-in to platform"]
+      }
+    ],
+    "implications": [
+      "Need OpenTelemetry instrumentation in code (or vendor SDK).",
+      "Log retention policy must be set.",
+      "Alerting tool and on-call rotation need to follow.",
+      "Cost-budget for the chosen tool needs to be tracked."
+    ]
+  },
+  "notes_for_agent": "For early-stage projects with no budget, 'platform-native + Sentry' is almost always right. For projects expecting >$1k/mo infra spend or running distributed services, recommend a real observability tool early. Ask about expected request volume and whether the team has been burned by missing telemetry before."
+}

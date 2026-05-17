@@ -1,0 +1,66 @@
+{
+  "name": "ci-cd",
+  "title": "Define the CI/CD pipeline",
+  "template_variant": "architecture",
+  "description": "Pick the CI provider, decide what runs on every push vs every PR vs every release, and how production deploys happen (auto vs gated).",
+  "tags": ["delivery", "automation", "release"],
+  "keywords": [
+    "ci",
+    "cd",
+    "continuous integration",
+    "continuous delivery",
+    "github actions",
+    "circleci",
+    "gitlab ci",
+    "buildkite",
+    "release",
+    "deploy",
+    "pipeline"
+  ],
+  "starter": {
+    "summary": "Define how code goes from PR → main → production.",
+    "issue": "Without explicit CI/CD shape, ad-hoc 'deploy from my machine' patterns emerge. Decide the pipeline so test coverage, deploy cadence, and release approvals are consistent from day one.",
+    "assumptions": [
+      "Deployment target is chosen.",
+      "Repo hosting (GitHub / GitLab / Bitbucket) is decided."
+    ],
+    "constraints": [
+      "Test suite runtime budget (affects feedback loops).",
+      "Deploy approval requirements (compliance, change-management).",
+      "Build environment requirements (containers, secrets, OS-specific)."
+    ],
+    "positions": [
+      {
+        "title": "GitHub Actions, deploy on merge to main",
+        "description": "Auto-deploy from main. Trunk-based dev.",
+        "pros": ["Tight integration with GitHub", "Free for OSS / small private repos", "Auto-deploy is fast feedback"],
+        "cons": ["Bad commits go straight to prod (mitigate with feature flags / canaries)", "Workflow YAML can sprawl"]
+      },
+      {
+        "title": "GitHub Actions, manual prod gate",
+        "description": "Auto-deploy to staging on main; prod requires manual approval.",
+        "pros": ["Human in the loop for prod", "Lower blast radius", "Compliance-friendly"],
+        "cons": ["Slower release cadence", "Approval bottlenecks", "More ceremony"]
+      },
+      {
+        "title": "PaaS-native (Vercel/Railway preview deploys)",
+        "description": "Hosting platform handles CI. Every PR gets a preview URL.",
+        "pros": ["Zero config", "Preview URLs in PRs", "Rollback is one click"],
+        "cons": ["Less customizable", "Vendor lock-in (you can leave but lose conveniences)"]
+      },
+      {
+        "title": "Containerized release with promotion (dev → staging → prod)",
+        "description": "Build once, tag, promote through environments.",
+        "pros": ["Build artifact is immutable", "Explicit promotion gates", "Standard for regulated work"],
+        "cons": ["More complex setup", "Slower to ship single-line fixes"]
+      }
+    ],
+    "implications": [
+      "Test suite must run in <X minutes (define X) to keep PRs flowing.",
+      "Secret management approach in CI is required.",
+      "Rollback playbook needs to exist.",
+      "Branch protection rules must match the chosen flow."
+    ]
+  },
+  "notes_for_agent": "For most projects with a small team and feature flags, 'auto-deploy from main' is right. If the project handles money, PII, or regulated data, suggest a manual gate before prod. Always ask: what's the desired release cadence?"
+}

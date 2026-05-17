@@ -1,0 +1,15 @@
+{
+  "version": "0.1.0",
+  "description": "Catalog of seed decisions the agent can pull when familiar territory is detected. Generated on demand from seed/*.json (this index is informational; the server reads each file directly).",
+  "seeds": [
+    { "name": "scope-statement", "title": "Define the MVP scope", "tags": ["scoping", "foundation"] },
+    { "name": "language-choice", "title": "Choose the primary implementation language", "tags": ["foundation", "architecture", "stack"] },
+    { "name": "runtime-target", "title": "Choose the runtime target", "tags": ["foundation", "deployment", "runtime"] },
+    { "name": "data-store", "title": "Choose the primary data store", "tags": ["foundation", "data", "persistence"] },
+    { "name": "auth-method", "title": "Choose the authentication approach", "tags": ["security", "users", "foundation"] },
+    { "name": "deployment-target", "title": "Choose the deployment target", "tags": ["foundation", "deployment", "infrastructure"] },
+    { "name": "ci-cd", "title": "Define the CI/CD pipeline", "tags": ["delivery", "automation", "release"] },
+    { "name": "testing-strategy", "title": "Define the testing strategy", "tags": ["quality", "delivery"] },
+    { "name": "observability", "title": "Choose the observability stack", "tags": ["operations", "reliability", "delivery"] }
+  ]
+}

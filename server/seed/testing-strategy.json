@@ -1,0 +1,67 @@
+{
+  "name": "testing-strategy",
+  "title": "Define the testing strategy",
+  "template_variant": "architecture",
+  "description": "Decide the test mix — unit vs integration vs e2e — what tools to use, what gets gated in CI, and what the coverage expectation is.",
+  "tags": ["quality", "delivery"],
+  "keywords": [
+    "test",
+    "testing",
+    "unit",
+    "integration",
+    "e2e",
+    "end to end",
+    "playwright",
+    "vitest",
+    "jest",
+    "pytest",
+    "coverage",
+    "tdd"
+  ],
+  "starter": {
+    "summary": "Decide what tests run, where, and what blocks merges.",
+    "issue": "Implicit testing strategies tend toward 'we'll add tests later.' Decide the floor (what's required for green CI) and the ceiling (when do we stop adding tests) explicitly.",
+    "assumptions": [
+      "Language is chosen; default test runner ecosystem is known.",
+      "Team has opinions on TDD vs test-after."
+    ],
+    "constraints": [
+      "Test runtime budget in CI.",
+      "Headless browser availability for e2e.",
+      "Team's testing maturity."
+    ],
+    "positions": [
+      {
+        "title": "Unit-heavy, sparse integration, minimal e2e",
+        "description": "Most tests are pure unit. A handful of integration tests for critical paths. One or two smoke e2es.",
+        "pros": ["Fast feedback", "Cheap to maintain", "Tests stay near the code"],
+        "cons": ["Misses integration bugs", "False confidence if business logic spans modules"]
+      },
+      {
+        "title": "Integration-heavy with real dependencies",
+        "description": "Tests hit real DB / real HTTP. Few mocks. Unit tests only where helpful.",
+        "pros": ["High confidence", "Catches integration issues", "Refactoring-friendly"],
+        "cons": ["Slower CI", "Test data setup overhead", "Flake risk"]
+      },
+      {
+        "title": "E2E-led (Playwright/Cypress as primary gate)",
+        "description": "E2E tests are the source of truth. Other tests supplement.",
+        "pros": ["Tests user-visible behavior", "Hard to fool"],
+        "cons": ["Slow", "Flaky", "Expensive to maintain", "Hard to localize failures"]
+      },
+      {
+        "title": "Property-based + unit + smoke e2e",
+        "description": "fast-check / Hypothesis for invariants, plus targeted unit & a smoke e2e.",
+        "pros": ["Catches edge cases automated example-based tests miss", "Great for parsers/serializers"],
+        "cons": ["Higher learning curve", "Slower to write initially"]
+      }
+    ],
+    "implications": [
+      "CI gating: which tests block merge?",
+      "Local dev: which subset runs on save?",
+      "Coverage tooling and expected threshold (or no threshold).",
+      "Flake policy: what happens when a test goes flaky?"
+    ]
+  },
+  "notes_for_agent": "For most projects, unit-heavy with sparse integration is the right default. Push back if the project is a transactional system (money, state machines) — those want integration-heavy. Ask the team for their testing pain history."
+}

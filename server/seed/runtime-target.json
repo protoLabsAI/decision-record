@@ -1,0 +1,67 @@
+{
+  "name": "runtime-target",
+  "title": "Choose the runtime target",
+  "template_variant": "architecture",
+  "description": "Decide where the code will execute: which Node version, browser support range, container runtime, edge platform, or serverless target.",
+  "tags": ["foundation", "deployment", "runtime"],
+  "keywords": [
+    "runtime",
+    "node",
+    "deno",
+    "bun",
+    "browser",
+    "edge",
+    "serverless",
+    "lambda",
+    "cloudflare workers",
+    "container",
+    "docker",
+    "kubernetes"
+  ],
+  "starter": {
+    "summary": "Decide where the code will execute at runtime.",
+    "issue": "Library choices, perf characteristics, and deployment model all depend on the runtime target. Decide early or refactor late.",
+    "assumptions": [
+      "Language is already chosen.",
+      "Workload profile (request/response, long-running, batch) is understood."
+    ],
+    "constraints": [
+      "Cost ceilings (serverless cold starts vs always-on containers).",
+      "Cold-start latency tolerances.",
+      "Stateful vs stateless workload requirements.",
+      "Existing infrastructure investments."
+    ],
+    "positions": [
+      {
+        "title": "Node.js 20+ on container",
+        "description": "Standard Node runtime in a Docker container. Predictable, broadly compatible.",
+        "pros": ["Predictable perf", "Long-running connections work fine", "Tooling is mature"],
+        "cons": ["Need to manage container infra", "Higher idle cost than serverless"]
+      },
+      {
+        "title": "Cloudflare Workers / edge",
+        "description": "JavaScript/TS on V8 isolates at the edge. Near-zero cold start.",
+        "pros": ["Sub-ms cold starts", "Global distribution", "Cost scales to zero"],
+        "cons": ["No native Node APIs", "CPU/memory limits", "Limited library ecosystem (Workers-compatible only)"]
+      },
+      {
+        "title": "AWS Lambda / serverless",
+        "description": "Function-as-a-service. Pay-per-invocation.",
+        "pros": ["No infra to manage", "Scales to zero", "Generous free tier"],
+        "cons": ["Cold starts (100ms-2s)", "Vendor lock-in", "Tooling friction for local dev"]
+      },
+      {
+        "title": "Bun on container",
+        "description": "Bun runtime in a Docker container. Faster startup and bundled tooling.",
+        "pros": ["Faster startup", "Built-in test runner, bundler, package manager", "Drop-in for many Node APIs"],
+        "cons": ["Newer ecosystem", "Some Node APIs not yet supported", "Less production track record"]
+      }
+    ],
+    "implications": [
+      "Constrains library choices (native Node APIs vs Web APIs vs runtime-specific).",
+      "Affects deployment pipeline shape (build & push container vs upload function vs deploy worker).",
+      "Determines observability surface (container logs vs platform-managed telemetry)."
+    ]
+  },
+  "notes_for_agent": "If language choice is already accepted, link this DR via depends_on. Tailor positions to the language (don't offer Bun if it's a Python project). Ask about expected request volume, latency budget, and whether the team has ops headroom for managing infra."
+}

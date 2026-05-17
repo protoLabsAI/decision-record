@@ -1,0 +1,21 @@
+# Node
+node_modules/
+*.tsbuildinfo
+
+# Build outputs
+server/dist/
+server/*.log
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Test / scratch
+/tmp/
+.scratch/
+
+# .dr is the live state directory only for projects USING this plugin —
+# in this repo (the plugin's own repo) it should never appear.
+.dr/

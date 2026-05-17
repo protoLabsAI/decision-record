@@ -1,0 +1,70 @@
+{
+  "name": "deployment-target",
+  "title": "Choose the deployment target",
+  "template_variant": "vendor",
+  "description": "Decide where the app runs in production: a PaaS (Vercel, Fly, Render), a cloud provider (AWS, GCP, Azure), Kubernetes, or on-prem.",
+  "tags": ["foundation", "deployment", "infrastructure"],
+  "keywords": [
+    "deploy",
+    "hosting",
+    "infrastructure",
+    "vercel",
+    "fly.io",
+    "railway",
+    "render",
+    "aws",
+    "gcp",
+    "azure",
+    "kubernetes",
+    "k8s",
+    "on-prem",
+    "self-host"
+  ],
+  "starter": {
+    "summary": "Decide where the application runs in production.",
+    "issue": "Deployment target shapes CI/CD, observability, scaling story, and ops budget. Hard to change once load-bearing infrastructure is in place.",
+    "assumptions": [
+      "Runtime target is decided (containers vs serverless vs edge).",
+      "Region/data-residency needs are known."
+    ],
+    "constraints": [
+      "Compliance: where data must live.",
+      "Budget — managed PaaS premium vs raw cloud.",
+      "Team's ops experience.",
+      "Existing infra investments (an established AWS account vs greenfield)."
+    ],
+    "positions": [
+      {
+        "title": "Vercel / Netlify (PaaS, frontend-leaning)",
+        "description": "Best for Next.js / SvelteKit / static-first apps. Tight integration with CDN.",
+        "pros": ["Fastest to ship", "Great DX", "CDN+functions built in"],
+        "cons": ["Premium pricing at scale", "Less flexibility for non-Node workloads", "Vendor lock-in"]
+      },
+      {
+        "title": "Fly.io / Railway / Render (PaaS, full-stack)",
+        "description": "Container-based PaaS. Runs anything that runs in Docker.",
+        "pros": ["Container-flexible", "Good pricing at small scale", "Decent DX"],
+        "cons": ["Smaller vendors → outage risk", "Fewer regions than hyperscalers"]
+      },
+      {
+        "title": "AWS / GCP / Azure direct",
+        "description": "Raw cloud. Use ECS/Cloud Run/App Service or VMs.",
+        "pros": ["Full control", "Best pricing at scale", "Every service available"],
+        "cons": ["Steep ops learning curve", "More YAML / Terraform / Pulumi", "Slower iteration"]
+      },
+      {
+        "title": "Kubernetes (managed)",
+        "description": "EKS/GKE/AKS or similar. For teams that need k8s primitives.",
+        "pros": ["Portable across clouds", "Rich ecosystem", "Standard ops patterns"],
+        "cons": ["Heavy ops overhead for small teams", "Complex local-dev story", "Cost overhead for control plane"]
+      }
+    ],
+    "implications": [
+      "CI/CD pipeline shape (deploy-to-vercel vs build-container-and-push vs helm-upgrade).",
+      "Observability stack choice (platform-native vs Datadog/Grafana).",
+      "Secret management approach.",
+      "Local-dev parity story."
+    ]
+  },
+  "notes_for_agent": "Ask: team size, existing cloud accounts, expected scale at 12 months. For solo/small teams shipping a web app, a PaaS is usually the right call — pay the premium for ops headroom. For workloads that need GPU, large background jobs, or compliance-heavy data flows, raw cloud or k8s is more likely correct."
+}
