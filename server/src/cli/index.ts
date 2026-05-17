@@ -52,6 +52,8 @@ Environment:
   OPENAI_API_KEY          Required unless --api-key is passed.
   OPENAI_BASE_URL         Optional. Set for OpenRouter, vLLM, Ollama, LiteLLM, etc.
   OPENAI_MODEL            Optional. Default model name.
+  OPENAI_EMBEDDING_MODEL  Optional. Default text-embedding-3-small. Set to "none" to disable
+                          semantic search (falls back to substring match).
   LINEAR_API_KEY          Optional. Enables Linear handoff target.
   LINEAR_TEAM_ID          Optional. Pre-fills the Linear team ID prompt.
 

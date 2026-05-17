@@ -61,6 +61,7 @@ A positional argument can substitute for `--idea` if no other input flag is give
 | `OPENAI_API_KEY` | yes (unless `--api-key`) | API key for the LLM endpoint. |
 | `OPENAI_BASE_URL` | no | OpenAI-compatible base URL. Defaults to OpenAI's. |
 | `OPENAI_MODEL` | no | Default model. Defaults to `gpt-4o`. |
+| `OPENAI_EMBEDDING_MODEL` | no | Embedding model for `dr_search_decisions` and the read-before-write retrieval. Defaults to `text-embedding-3-small`. Set to `"none"` to disable embeddings entirely; search will use substring fallback. |
 | `LINEAR_API_KEY` | no | Enables the Linear handoff branch in the handoff phase. |
 | `LINEAR_TEAM_ID` | no | Pre-fills the team ID prompt at Linear handoff. |
 | `DR_LOG_LEVEL` | no | `debug` \| `info` \| `warn` \| `error`. Default `info`. Applies to the MCP server's stderr logs. |

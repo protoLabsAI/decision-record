@@ -11,6 +11,7 @@ import {
 } from "../schemas/index.js";
 import { fail, ok, registerTool } from "./registry.js";
 import { decisionId, nowIso, slugify } from "../util.js";
+import { indexDecision } from "../embeddings/index.js";
 
 function resolveCwd(cwd: string | undefined): string {
   return cwd && cwd.length > 0 ? cwd : process.cwd();
@@ -156,6 +157,9 @@ export function registerDecisionTools(): void {
         entity_id: updated.id,
         payload: { changed: Object.keys(input).filter((k) => k !== "cwd" && k !== "id") },
       });
+      if (updated.status === "accepted") {
+        await indexDecision(store, updated);
+      }
       return ok({ decision: updated });
     },
   });
@@ -281,6 +285,7 @@ export function registerDecisionTools(): void {
         entity_kind: "decision",
         entity_id: updated.id,
       });
+      await indexDecision(store, updated);
       return ok({ decision: updated });
     },
   });

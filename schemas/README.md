@@ -7,6 +7,7 @@ JSON Schema (draft-07) definitions for the data emitted by the decision-record p
 | [`project.schema.json`](project.schema.json) | `dr/project.json` (in target repo) | `dr_init`, scope updates during scoping phase |
 | [`decision.schema.json`](decision.schema.json) | `dr/decisions/<id>.json` (one per DR) | `dr_propose_decision`, `dr_update_decision`, `dr_review_decision`, `dr_accept_decision` |
 | [`task.schema.json`](task.schema.json) | `dr/tasks/<id>.json` (one per task) | `dr_propose_task`, `dr_update_task` |
+| [`outcome.schema.json`](outcome.schema.json) | `dr/outcomes/<id>.json` (one per post-handoff observation) | `dr_record_outcome`, `dr_update_outcome`, `dr_set_outcome_status` |
 | [`state.schema.json`](state.schema.json) | `.dr/state.json` (internal/derived) | All pipeline tools; never edited by hand |
 | [`event.schema.json`](event.schema.json) | `.dr/events.jsonl` (one event per line) | Every tool appends; never rewritten |
 
@@ -17,7 +18,8 @@ target-repo/
 ├── .dr/
 │   ├── state.json          # PipelineState
 │   ├── events.jsonl        # Append-only event log (each line ⇒ Event)
-│   └── cache/              # Render artifacts, seed snapshots (regeneratable)
+│   └── cache/
+│       └── embeddings.json # EmbeddingCache (regeneratable via dr_reindex_embeddings)
 └── dr/
     ├── project.json        # Project (MVP manifest)
     ├── decisions/
@@ -26,6 +28,9 @@ target-repo/
     ├── tasks/
     │   ├── T0001-bootstrap.json  # Task
     │   └── T0001-bootstrap.md    # Rendered view (regeneratable)
+    ├── outcomes/
+    │   ├── O0001-*.json    # Outcome (post-handoff observation)
+    │   └── O0001-*.md      # Rendered view (regeneratable)
     └── index.html          # Rendered project overview (regeneratable)
 ```
 

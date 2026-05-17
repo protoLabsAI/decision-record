@@ -30,6 +30,8 @@ The decision-record docs follow the [Diátaxis](https://diataxis.fr) framework �
 - [Configure LLM providers](how-to/configure-providers.md) — OpenAI, OpenRouter, Ollama, vLLM, LiteLLM
 - [Hand off to Linear](how-to/handoff-to-linear.md)
 - [Calibrate gates](how-to/calibrate-gates.md) — `poc` / `mvp` / `full` + overrides
+- [Track outcomes](how-to/track-outcomes.md) — record post-handoff observations
+- [Search decisions](how-to/search-decisions.md) — semantic + substring search and reindexing
 
 ### Reference
 - [CLI](reference/cli.md) — every flag, env var, exit code
@@ -41,6 +43,7 @@ The decision-record docs follow the [Diátaxis](https://diataxis.fr) framework �
 - [Why decision records?](explanation/why-decision-records.md) — Joel Parker Henderson's canonical material
 - [Design rationale](explanation/design-rationale.md) — why filesystem, why hard gates, why lens-rotating skeptic
 - [The five phases](explanation/the-five-phases.md) — what each phase does and why this shape
+- [Research notes](explanation/research-notes.md) — broader DR/ADR ecosystem, prior art, and the rationale for outcomes + semantic search
 
 ## Outside the docs tree
 

@@ -25,6 +25,10 @@ export function taskId(seq: number, slug: string): string {
   return `T${pad4(seq)}-${slug}`;
 }
 
+export function outcomeId(seq: number, slug: string): string {
+  return `O${pad4(seq)}-${slug}`;
+}
+
 export function truncate(text: string, max: number): string {
   if (text.length <= max) return text;
   return text.slice(0, max - 1) + "…";

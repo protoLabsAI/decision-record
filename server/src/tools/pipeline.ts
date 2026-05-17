@@ -99,6 +99,7 @@ export function registerPipelineTools(): void {
       effective_gate_config: effective,
       next_decision_seq: 1,
       next_task_seq: 1,
+      next_outcome_seq: 1,
       pending_questions: [],
       gate_failures: [],
       last_event_at: now,

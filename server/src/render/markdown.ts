@@ -1,4 +1,4 @@
-import { Decision, Project, Task } from "../schemas/index.js";
+import { Decision, Outcome, Project, Task } from "../schemas/index.js";
 
 function h1(text: string): string {
   return `# ${text}\n`;
@@ -24,7 +24,7 @@ function table(rows: { key: string; value: string }[]): string {
   return out;
 }
 
-export function renderDecisionMarkdown(decision: Decision): string {
+export function renderDecisionMarkdown(decision: Decision, outcomes: Outcome[] = []): string {
   let out = "";
   out += h1(`${decision.id} — ${decision.title}`);
   out += table([
@@ -107,6 +107,18 @@ export function renderDecisionMarkdown(decision: Decision): string {
     out += `- **At:** ${decision.sign_off.at}\n`;
     if (decision.sign_off.notes) out += `- **Notes:** ${decision.sign_off.notes}\n`;
   }
+  const relevantOutcomes = outcomes.filter((o) => o.decision_id === decision.id);
+  if (relevantOutcomes.length > 0) {
+    out += h2("Outcomes");
+    for (const o of relevantOutcomes) {
+      const metric = o.metric ? ` — ${o.metric}` : "";
+      out += `\n- **${o.id}** \`${o.status}\`${metric} _(recorded ${o.recorded_at})_\n  ${o.observation}\n`;
+      if (o.evidence.length > 0) {
+        out += "  - Evidence:\n";
+        for (const e of o.evidence) out += `    - ${e}\n`;
+      }
+    }
+  }
   if (decision.related_decisions.length > 0 || decision.related_artifacts.length > 0) {
     out += h2("Related");
     if (decision.related_decisions.length > 0) {
@@ -166,7 +178,39 @@ export function renderTaskMarkdown(task: Task, decisionsById: Map<string, Decisi
   return out;
 }
 
-export function renderProjectMarkdown(project: Project, decisionCount: number, taskCount: number): string {
+export function renderOutcomeMarkdown(outcome: Outcome, decision?: Decision): string {
+  let out = "";
+  out += h1(`${outcome.id} — outcome of ${outcome.decision_id}`);
+  const rows = [
+    { key: "Status", value: `\`${outcome.status}\`` },
+    {
+      key: "Decision",
+      value: decision
+        ? `[\`${outcome.decision_id}\`](../decisions/${outcome.decision_id}.md) — ${decision.title}`
+        : `\`${outcome.decision_id}\``,
+    },
+    { key: "Recorded by", value: `${outcome.recorded_actor ?? outcome.recorded_by} (${outcome.recorded_by})` },
+    { key: "Recorded at", value: outcome.recorded_at },
+    { key: "Updated", value: outcome.updated_at },
+  ];
+  if (outcome.metric) rows.push({ key: "Metric", value: outcome.metric });
+  if (outcome.tags.length > 0) {
+    rows.push({
+      key: "Tags",
+      value: outcome.tags.map((t) => `\`${t}\``).join(", "),
+    });
+  }
+  out += table(rows);
+  out += h2("Observation");
+  out += paragraph(outcome.observation);
+  if (outcome.evidence.length > 0) {
+    out += h2("Evidence");
+    out += bulletList(outcome.evidence);
+  }
+  return out;
+}
+
+export function renderProjectMarkdown(project: Project, decisionCount: number, taskCount: number, outcomeCount = 0): string {
   let out = "";
   out += h1(project.title);
   out += table([
@@ -177,6 +221,7 @@ export function renderProjectMarkdown(project: Project, decisionCount: number, t
     { key: "Updated", value: project.updated_at },
     { key: "Decisions", value: decisionCount.toString() },
     { key: "Tasks", value: taskCount.toString() },
+    { key: "Outcomes", value: outcomeCount.toString() },
   ]);
   if (project.description) {
     out += h2("Description");

@@ -6,6 +6,10 @@ import { makeTmpProject } from "./helpers/tmp-project.js";
 import { makeMockOpenAI, ScriptedResponse } from "./helpers/mock-openai.js";
 import { registerAllTools } from "../src/tools/index.js";
 import { runPipeline } from "../src/cli/orchestrator.js";
+import {
+  resetDefaultEmbedClient,
+  setEmbedClientForTesting,
+} from "../src/embeddings/client.js";
 
 /**
  * End-to-end pipeline test using a scripted mock LLM.
@@ -22,6 +26,10 @@ describe("Flow: POC happy path (mock LLM)", () => {
       registerAllTools();
       toolsRegistered = true;
     }
+  });
+
+  after(() => {
+    resetDefaultEmbedClient();
   });
 
   it("runs intake → scoping → deciding → decomposing → handoff (filesystem)", async () => {
@@ -51,13 +59,24 @@ describe("Flow: POC happy path (mock LLM)", () => {
         // ── Deciding agent ─────────────────────────────────────────────
         // Turn 1: read status
         { toolCalls: [{ name: "dr_status", args: {} }] },
-        // Turn 2: search seeds
+        // Turn 2: list existing decisions
+        { toolCalls: [{ name: "dr_list_decisions", args: {} }] },
+        // Turn 3: read-before-write search for the topic
+        {
+          toolCalls: [
+            {
+              name: "dr_search_decisions",
+              args: { query: "primary implementation language" },
+            },
+          ],
+        },
+        // Turn 4: search seeds
         { toolCalls: [{ name: "dr_seed_search", args: { query: "language" } }] },
-        // Turn 3: load seed
+        // Turn 5: load seed
         {
           toolCalls: [{ name: "dr_seed_load", args: { seed_name: "language-choice" } }],
         },
-        // Turn 4: pick a position + argument
+        // Turn 6: pick a position + argument
         {
           toolCalls: [
             {
@@ -70,8 +89,8 @@ describe("Flow: POC happy path (mock LLM)", () => {
             },
           ],
         },
-        // Turn 5: final summary
-        { text: "Decided: 0001-* → TypeScript." },
+        // Turn 7: final summary
+        { text: "Decided: 0001-* → TypeScript. Search returned 0 prior matches." },
 
         // ── Skeptic (5 lenses × 1 decision = 5 invocations × 2 turns each) ──
         // Each skeptic invocation: 1 review tool call + 1 summary
@@ -217,6 +236,7 @@ describe("Flow: POC happy path (mock LLM)", () => {
 
       const client = makeMockOpenAI(script);
 
+      setEmbedClientForTesting(client);
       const outcome = await runPipeline(
         {
           cwd: project.cwd,
@@ -275,6 +295,24 @@ describe("Flow: POC happy path (mock LLM)", () => {
       assert.ok(kinds.has("task_proposed"), "task_proposed event");
       assert.ok(kinds.has("export_completed"), "export_completed event");
       assert.ok(kinds.has("phase_advanced"), "phase_advanced event");
+      assert.ok(
+        kinds.has("embeddings_indexed"),
+        "embeddings_indexed event after decision_accepted"
+      );
+
+      // Embedding cache should contain the accepted decision.
+      assert.ok(
+        project.exists(".dr/cache/embeddings.json"),
+        "embeddings cache written"
+      );
+      const cache = project.readJson<{
+        entries: Record<string, { dim: number }>;
+      }>(".dr/cache/embeddings.json");
+      assert.equal(
+        Object.keys(cache.entries).length,
+        1,
+        "one cache entry for the accepted DR"
+      );
 
       // Index HTML sanity
       const html = readFileSync(join(project.cwd, "dr/index.html"), "utf8");

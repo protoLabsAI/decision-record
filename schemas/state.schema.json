@@ -44,6 +44,7 @@
     },
     "next_decision_seq": { "type": "integer", "minimum": 1 },
     "next_task_seq": { "type": "integer", "minimum": 1 },
+    "next_outcome_seq": { "type": "integer", "minimum": 1 },
     "pending_questions": {
       "type": "array",
       "description": "Open questions the agent has surfaced and is waiting on the human for.",
