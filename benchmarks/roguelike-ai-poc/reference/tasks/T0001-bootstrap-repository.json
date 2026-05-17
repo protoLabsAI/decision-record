@@ -1,0 +1,30 @@
+{
+  "id": "T0001-bootstrap-repository",
+  "number": 1,
+  "slug": "bootstrap-repository",
+  "title": "Bootstrap repository",
+  "description": "Initialize the Python project layout: pyproject.toml or requirements.txt with openai pin, a src/ module path, a README stub, and a .gitignore. Verify a `python -c \"import openai\"` succeeds in a fresh venv.",
+  "status": "ready",
+  "estimate": {
+    "unit": "hours",
+    "value": 1,
+    "confidence": "high"
+  },
+  "acceptance_criteria": [
+    "pyproject.toml or requirements.txt committed",
+    "openai SDK installable in a venv",
+    "README explains 30-second quickstart",
+    "python -c \"from src import __init__\" runs"
+  ],
+  "depends_on": [],
+  "decision_refs": [
+    "0001-choose-the-implementation-language"
+  ],
+  "priority": "p0",
+  "labels": [
+    "foundation"
+  ],
+  "assignee_hint": "agent",
+  "created_at": "2026-05-17T04:14:22.524Z",
+  "updated_at": "2026-05-17T04:14:22.524Z"
+}

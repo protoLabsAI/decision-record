@@ -24,7 +24,7 @@ This repo is the planning system itself. We deliberately stop at the handoff —
 
 ## Attribution
 
-The conceptual core derives from Joel Parker Henderson's [canonical decision-record repo](https://github.com/joelparkerhenderson/decision-record). Preserve attribution to upstream in any rework of `docs/upstream-canon.md` or `templates/canonical.md`.
+The conceptual core derives from Joel Parker Henderson's [canonical decision-record repo](https://github.com/joelparkerhenderson/decision-record). Preserve attribution to upstream in any rework of `docs/explanation/why-decision-records.md` or `templates/canonical.md`.
 
 ## License
 

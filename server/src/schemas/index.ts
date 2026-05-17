@@ -254,7 +254,7 @@ export const GateFailureSchema = z.object({
 export type GateFailure = z.infer<typeof GateFailureSchema>;
 
 export const PipelineStateSchema = z.object({
-  schema_version: z.string(),
+  schema_version: z.string().regex(/^[0-9]+\.[0-9]+\.[0-9]+$/, "must be semver"),
   project_id: SlugSchema,
   phase: PhaseSchema,
   effective_gate_config: EffectiveGateConfigSchema,

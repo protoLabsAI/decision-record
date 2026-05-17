@@ -33,5 +33,5 @@ references:
     repository-code: 'https://github.com/joelparkerhenderson/decision-record/'
     abstract: >-
       The canonical concept, template, and teamwork model for decision
-      records — preserved in this fork at docs/upstream-canon.md and
-      templates/canonical.md.
+      records — preserved in this fork at docs/explanation/why-decision-records.md
+      and templates/canonical.md.

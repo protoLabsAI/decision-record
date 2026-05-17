@@ -4,7 +4,7 @@
 
 This repository is a Claude Code plugin + bundled MCP server. It runs inside a fresh or template repo, partners with a human and an AI agent, and produces an executable MVP plan: a scoped manifest, a set of accepted decision records, and a dependency-aware task graph. Output goes to Linear (primary) or stays as filesystem artifacts (fallback).
 
-This project is a derivative of [Joel Parker Henderson's canonical decision-record repo](https://github.com/joelparkerhenderson/decision-record). The canonical explanation of what a DR is and why it matters is preserved at [`docs/upstream-canon.md`](docs/upstream-canon.md). What this fork adds is **enforcement**: workflows, tools, and a state machine that make DRs a non-skippable part of planning with an agentic system.
+This project is a derivative of [Joel Parker Henderson's canonical decision-record repo](https://github.com/joelparkerhenderson/decision-record). The canonical explanation of what a DR is and why it matters is preserved at [`docs/explanation/why-decision-records.md`](docs/explanation/why-decision-records.md). What this fork adds is **enforcement**: workflows, tools, and a state machine that make DRs a non-skippable part of planning with an agentic system.
 
 ## What you get
 
@@ -17,7 +17,16 @@ This project is a derivative of [Joel Parker Henderson's canonical decision-reco
 
 ## Status
 
-Active development — first usable cut is in. The pipeline is functional end-to-end (intake → scope → decisions → tasks → handoff to filesystem or Linear). See [`docs/quickstart.md`](docs/quickstart.md) for the five-minute walkthrough, [`docs/usage.md`](docs/usage.md) for the full interaction model, and [`docs/architecture.md`](docs/architecture.md) for the data model.
+Active development — first usable cut is in. The pipeline is functional end-to-end (intake → scope → decisions → tasks → handoff to filesystem or Linear). A standalone CLI (`decision-record`) ships alongside the Claude Code plugin and MCP server.
+
+## Documentation
+
+Docs follow the [Diátaxis](https://diataxis.fr) framework — start at [`docs/README.md`](docs/README.md) to orient.
+
+- **Brand new?** → [`docs/tutorials/your-first-plan.md`](docs/tutorials/your-first-plan.md) is a 15-minute end-to-end walkthrough.
+- **How do I do X?** → [`docs/how-to/`](docs/how-to/) (install, run the CLI, configure providers, hand off to Linear, calibrate gates).
+- **What's the exact spec?** → [`docs/reference/`](docs/reference/) (CLI flags, MCP tools, data model, gates).
+- **Why is it built this way?** → [`docs/explanation/`](docs/explanation/) (design rationale, the five phases, why decision records).
 
 ## How it's structured
 
@@ -58,9 +67,17 @@ npm install
 npm run build
 ```
 
-Then either link as a Claude Code plugin (symlink the repo into `~/.claude/plugins/decision-record/`) or run the MCP server standalone via `node /path/to/decision-record/server/dist/index.js`. Full instructions: [`docs/quickstart.md`](docs/quickstart.md).
+Then either:
+- Use the **standalone CLI**: `export OPENAI_API_KEY=… && node dist/cli.js --idea "your idea here"`
+- Use the **Claude Code plugin**: symlink the repo into `~/.claude/plugins/decision-record/` and run `/plan` inside Claude Code.
+
+Full install instructions: [`docs/how-to/install.md`](docs/how-to/install.md). First-run walkthrough: [`docs/tutorials/your-first-plan.md`](docs/tutorials/your-first-plan.md).
 
 (A published marketplace release is on the roadmap.)
+
+## Benchmarks
+
+We use a canonical prompt — an AI-driven roguelike POC — to spot regressions as the system evolves. See [`benchmarks/`](benchmarks/) for the prompt, expected output shape, and a `run.sh` to re-run it.
 
 ## Contributing
 
@@ -68,8 +85,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Issues and pull requests welcome.
 
 ## Acknowledgments
 
-The conceptual core — what a decision record is, the canonical template structure, the teamwork model around DRs — is the work of [Joel Parker Henderson](https://joelparkerhenderson.com). See [`docs/upstream-canon.md`](docs/upstream-canon.md) for the preserved canonical material, and [CITATION.cff](CITATION.cff) for citation metadata.
+The conceptual core — what a decision record is, the canonical template structure, the teamwork model around DRs — is the work of [Joel Parker Henderson](https://joelparkerhenderson.com). See [`docs/explanation/why-decision-records.md`](docs/explanation/why-decision-records.md) for the preserved canonical material, and [CITATION.cff](CITATION.cff) for citation metadata.
 
 ## License
 
-[MIT](LICENSE) — for the code, schemas, and tooling in this repository. The preserved canonical content in `docs/upstream-canon.md` and the canonical template at `templates/canonical.md` derive from upstream and should be attributed to Joel Parker Henderson per CITATION.cff.
+[MIT](LICENSE) — for the code, schemas, and tooling in this repository. The preserved canonical content in `docs/explanation/why-decision-records.md` and the canonical template at `templates/canonical.md` derive from upstream and should be attributed to Joel Parker Henderson per CITATION.cff.

@@ -1,0 +1,64 @@
+{
+  "id": "ai-driven-roguelike-poc",
+  "title": "AI-driven roguelike POC",
+  "description": "A minimal roguelike where the player primes an AI agent with a strategy, then the agent autonomously navigates a single ASCII-rendered room over a tick system until it wins the objective or dies. Goal: prove the agent-as-player concept with the smallest viable surface area.",
+  "created_at": "2026-05-17T04:12:02.030Z",
+  "updated_at": "2026-05-17T04:14:44.540Z",
+  "effort_level": "poc",
+  "status": "handed-off",
+  "scope": {
+    "in_scope": [
+      "A 10×10 ASCII-rendered single room with walls (#), floor (.), player (@), exit (>), and a hazard tile (X)",
+      "Tick-based game loop: each tick prints the frame, then queries the agent for one action",
+      "A small action vocabulary: move N/S/E/W and noop",
+      "Player has HP; stepping on hazard removes HP; reaching exit = win, HP=0 = death",
+      "Strategy prompt provided once at startup, fed to the agent as system prompt for every tick",
+      "LLM agent receives current frame + HP + tick number, returns a single action"
+    ],
+    "out_of_scope": [
+      "Multiple rooms, dungeon generation, procedural levels",
+      "Combat with enemies, NPCs, monsters",
+      "Inventory, items, equipment",
+      "Save/load, persistence",
+      "Visual UI beyond ASCII to terminal",
+      "Multiplayer, networking",
+      "Self-improving agent loops or RL training"
+    ],
+    "success_criteria": [
+      "A user can run a single command, supply a strategy prompt, and watch the agent play until win or death",
+      "Win and death paths both observed in manual playtests",
+      "Different strategy prompts produce visibly different agent behavior",
+      "End-to-end run completes in under 60 seconds wall time on a typical OpenAI API call"
+    ],
+    "nice_to_have": [
+      "Configurable room layout from a text file",
+      "Replay log written to disk for post-hoc inspection",
+      "A few preset strategy prompts to demo (cautious, greedy, exploratory)"
+    ]
+  },
+  "sign_offs": [
+    {
+      "phase": "handing-off",
+      "by": "human",
+      "actor": "kj",
+      "at": "2026-05-17T04:14:44.523Z",
+      "notes": "All decisions accepted, graph validates clean."
+    },
+    {
+      "phase": "handing-off",
+      "by": "human",
+      "actor": "kj",
+      "at": "2026-05-17T04:14:44.540Z"
+    }
+  ],
+  "handoff": {
+    "target": "filesystem",
+    "exported_at": "2026-05-17T04:14:44.540Z",
+    "issue_count": 7,
+    "document_count": 4
+  },
+  "gate_config": {
+    "preset": "poc"
+  },
+  "tags": []
+}

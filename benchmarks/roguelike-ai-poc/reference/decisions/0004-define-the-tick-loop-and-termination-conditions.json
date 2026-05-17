@@ -1,0 +1,68 @@
+{
+  "id": "0004-define-the-tick-loop-and-termination-conditions",
+  "number": 4,
+  "slug": "define-the-tick-loop-and-termination-conditions",
+  "title": "Define the tick loop and termination conditions",
+  "status": "accepted",
+  "template_variant": "architecture",
+  "created_at": "2026-05-17T04:13:38.691Z",
+  "updated_at": "2026-05-17T04:13:38.692Z",
+  "summary": "How the game advances tick by tick, when it stops, and how the user observes it.",
+  "issue": "With an LLM in the loop, each tick is slow (~2-5s). We need a predictable loop with hard stops so the POC always terminates and is always watchable.",
+  "assumptions": [
+    "One-player synchronous game",
+    "User runs the script in a terminal and watches frames",
+    "LLM calls happen on the same thread"
+  ],
+  "constraints": [
+    "Must terminate on win, death, or step limit",
+    "Frame must visibly update each tick",
+    "Must not deadlock on a stuck agent"
+  ],
+  "positions": [
+    {
+      "title": "Synchronous loop with step cap",
+      "description": "while not terminal: render → ask agent → apply → check win/death. Hard cap at N steps (e.g., 50).",
+      "pros": [
+        "Simplest mental model",
+        "Easy to log",
+        "Predictable termination"
+      ],
+      "cons": [
+        "UI freezes during LLM call (acceptable for POC)"
+      ],
+      "links": []
+    },
+    {
+      "title": "Async loop with timeout per tick",
+      "description": "Wrap each agent call in a 10s timeout; on timeout, treat as noop.",
+      "pros": [
+        "Robust to slow API",
+        "Game keeps moving"
+      ],
+      "cons": [
+        "More complex",
+        "Asyncio inside a CLI script is heavier than warranted"
+      ],
+      "links": []
+    }
+  ],
+  "opinions": [],
+  "argument": "For a single-window terminal demo, synchronous is fine. Adding asyncio doubles the code size for no demo-visible benefit. The step cap protects against an agent that wanders forever and ensures every run terminates.",
+  "selected_position": "Synchronous loop with step cap",
+  "implications": [
+    "Step cap = 50; on cap, exit with status \"timeout\" and final HP.",
+    "Use time.sleep(0.05) after each render so the user can see the frames advance.",
+    "Loop logs each tick to stdout: frame, action, reasoning, hp, tick#."
+  ],
+  "depends_on": [],
+  "related_decisions": [],
+  "related_artifacts": [],
+  "review": [],
+  "sign_off": {
+    "by": "human",
+    "actor": "kj",
+    "at": "2026-05-17T04:13:38.692Z"
+  },
+  "tags": []
+}
