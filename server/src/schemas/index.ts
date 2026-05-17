@@ -192,6 +192,52 @@ export const DecisionSchema = z.object({
 });
 export type Decision = z.infer<typeof DecisionSchema>;
 
+export const OutcomeStatusSchema = z.enum([
+  "pending",
+  "validated",
+  "invalidated",
+  "inconclusive",
+]);
+export type OutcomeStatus = z.infer<typeof OutcomeStatusSchema>;
+
+export const OutcomeIdSchema = z
+  .string()
+  .regex(/^O[0-9]{4}-[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$/, "must look like 'O0001-slug'");
+
+export const OutcomeSchema = z.object({
+  id: OutcomeIdSchema,
+  number: z.number().int().min(1),
+  slug: SlugSchema,
+  decision_id: DecisionIdSchema,
+  status: OutcomeStatusSchema,
+  observation: z.string().min(1),
+  metric: z.string().optional(),
+  evidence: z.array(z.string()).default([]),
+  recorded_by: z.enum(["agent", "human"]).default("human"),
+  recorded_actor: z.string().optional(),
+  recorded_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+  tags: z.array(z.string()).default([]),
+});
+export type Outcome = z.infer<typeof OutcomeSchema>;
+
+export const EmbeddingCacheEntrySchema = z.object({
+  decision_id: DecisionIdSchema,
+  model: z.string(),
+  dim: z.number().int().min(1),
+  hash: z.string(),
+  vector: z.array(z.number()),
+  embedded_at: z.string().datetime(),
+});
+export type EmbeddingCacheEntry = z.infer<typeof EmbeddingCacheEntrySchema>;
+
+export const EmbeddingCacheSchema = z.object({
+  version: z.literal("1"),
+  default_model: z.string(),
+  entries: z.record(EmbeddingCacheEntrySchema),
+});
+export type EmbeddingCache = z.infer<typeof EmbeddingCacheSchema>;
+
 export const TaskStatusSchema = z.enum([
   "open",
   "ready",
@@ -260,6 +306,7 @@ export const PipelineStateSchema = z.object({
   effective_gate_config: EffectiveGateConfigSchema,
   next_decision_seq: z.number().int().min(1).default(1),
   next_task_seq: z.number().int().min(1).default(1),
+  next_outcome_seq: z.number().int().min(1).default(1),
   pending_questions: z.array(PendingQuestionSchema).default([]),
   gate_failures: z.array(GateFailureSchema).default([]),
   last_event_at: z.string().datetime().optional(),
@@ -291,6 +338,11 @@ export const EventKindSchema = z.enum([
   "export_completed",
   "export_failed",
   "sign_off_recorded",
+  "outcome_recorded",
+  "outcome_status_changed",
+  "outcome_updated",
+  "embeddings_indexed",
+  "embeddings_index_failed",
 ]);
 export type EventKind = z.infer<typeof EventKindSchema>;
 
@@ -299,7 +351,7 @@ export const EventSchema = z.object({
   actor: ActorTypeSchema,
   actor_name: z.string().optional(),
   kind: EventKindSchema,
-  entity_kind: z.enum(["project", "decision", "task", "phase", "question"]).optional(),
+  entity_kind: z.enum(["project", "decision", "task", "phase", "question", "outcome"]).optional(),
   entity_id: z.string().optional(),
   payload: z.record(z.unknown()).optional(),
   correlation_id: z.string().optional(),

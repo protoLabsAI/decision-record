@@ -40,12 +40,17 @@
         "export_started",
         "export_completed",
         "export_failed",
-        "sign_off_recorded"
+        "sign_off_recorded",
+        "outcome_recorded",
+        "outcome_status_changed",
+        "outcome_updated",
+        "embeddings_indexed",
+        "embeddings_index_failed"
       ]
     },
     "entity_kind": {
       "type": "string",
-      "enum": ["project", "decision", "task", "phase", "question"]
+      "enum": ["project", "decision", "task", "outcome", "phase", "question"]
     },
     "entity_id": { "type": "string" },
     "payload": {

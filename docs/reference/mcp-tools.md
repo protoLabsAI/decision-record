@@ -160,11 +160,82 @@ Instantiate a seed as a `proposed` DR. Pre-fills positions, assumptions, constra
 | `depends_on` | string[] | Decision IDs this DR depends on. |
 | `tags` | string[] | |
 
+## Outcome tools
+
+Outcomes close the feedback loop between an accepted decision and what actually happened in practice. They live alongside decisions (never nested inside) so decisions remain immutable after sign-off.
+
+### `dr_record_outcome`
+
+Record an observed outcome for an accepted decision. Requires the project to be in `handed-off` status — pre-handoff outcomes are nonsensical.
+
+| Input | Type | Notes |
+|---|---|---|
+| `decision_id` | string | Must point at an `accepted` decision. |
+| `observation` | string | Free-form prose of what was observed. |
+| `status` | `"pending" \| "validated" \| "invalidated" \| "inconclusive"` | Default `pending`. |
+| `metric` | string? | Optional structured metric, e.g., `"p99 latency 290ms"`. |
+| `evidence` | string[] | URLs, file refs, dashboards. |
+| `tags` | string[] | |
+| `slug` | string? | Defaults to a slug derived from the observation. |
+| `recorded_by` | `"agent" \| "human"` | Default `human`. |
+| `recorded_actor` | string? | |
+
+Returns: `{ outcome }`. Emits `outcome_recorded` and bumps `state.next_outcome_seq`.
+
+### `dr_set_outcome_status`
+
+Transition an outcome's status (e.g., `pending` → `validated`). Emits `outcome_status_changed` unless the status is unchanged (in which case the call is a no-op and returns `{ unchanged: true }`).
+
+### `dr_update_outcome`
+
+Patch `observation`, `metric`, `evidence`, `tags`. Use `dr_set_outcome_status` for status transitions.
+
+### `dr_list_outcomes`
+
+Filter by `decision_id` and/or `status[]`. Returns summaries.
+
+### `dr_get_outcome`
+
+Fetch the full outcome by id.
+
+## Search tools
+
+Semantic search over decisions powered by an embeddings cache. Falls back to substring match when embeddings are unavailable so the tool always returns something.
+
+### `dr_search_decisions`
+
+Find prior decisions similar to a free-form topic. Used by the deciding agent for **read-before-write** retrieval — before proposing a new DR, ask whether something similar already exists.
+
+| Input | Type | Notes |
+|---|---|---|
+| `query` | string | Free-form text describing the topic. |
+| `limit` | integer | Default 5, max 50. |
+| `min_score` | number | Default 0.5. Only applied to semantic results. |
+| `status` | array of decision statuses | Default `["accepted"]`. |
+
+Returns one of:
+
+- `{ mode: "semantic", model, results: [{ id, title, status, summary, selected_position, score }], warnings }`
+- `{ mode: "substring", results: [...], warnings }` — when embeddings are disabled, the cache is empty, or the cache model doesn't match the current `OPENAI_EMBEDDING_MODEL`.
+- `{ mode: "empty", results: [], warnings }` — when no decisions match the status filter.
+
+### `dr_reindex_embeddings`
+
+Re-embed every accepted decision. Useful after switching `OPENAI_EMBEDDING_MODEL`, after a manual cache wipe, or to backfill decisions that were accepted before embeddings were enabled.
+
+| Input | Type | Notes |
+|---|---|---|
+| `force` | boolean | Default `false`. When `true`, wipes the cache first to force a full re-embed. |
+
+Returns counts: `{ accepted_total, indexed, skipped, failed, failures, model }`. Fails fast when `OPENAI_EMBEDDING_MODEL=none`.
+
+> **Env var.** `OPENAI_EMBEDDING_MODEL` selects the embedding model (default `text-embedding-3-small`). Set it to `"none"` to disable embeddings entirely — search will use substring fallback only, and `dr_accept_decision` will skip indexing.
+
 ## Render
 
 ### `dr_render`
 
-Regenerate Markdown + `index.html` from JSON. Idempotent.
+Regenerate Markdown + `index.html` from JSON. Idempotent. Includes outcomes when present.
 
 ## Handoff
 

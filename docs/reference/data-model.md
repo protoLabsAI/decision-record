@@ -1,6 +1,6 @@
 # Data model
 
-The pipeline stores five entity types. JSON Schemas are the source of truth in [`../../schemas/`](../../schemas/); the Zod mirrors used at runtime live in [`server/src/schemas/index.ts`](../../server/src/schemas/index.ts).
+The pipeline stores six entity types. JSON Schemas are the source of truth in [`../../schemas/`](../../schemas/); the Zod mirrors used at runtime live in [`server/src/schemas/index.ts`](../../server/src/schemas/index.ts).
 
 ## Filesystem layout
 
@@ -9,7 +9,8 @@ The pipeline stores five entity types. JSON Schemas are the source of truth in [
 ├── .dr/                    # internal, gitignored by default
 │   ├── state.json          # PipelineState
 │   ├── events.jsonl        # Event (one per line, append-only)
-│   └── cache/              # derived artifacts
+│   └── cache/
+│       └── embeddings.json # EmbeddingCache (vector cache for dr_search_decisions)
 └── dr/                     # tracked
     ├── project.json        # Project
     ├── project.md          # rendered, derived
@@ -19,6 +20,9 @@ The pipeline stores five entity types. JSON Schemas are the source of truth in [
     ├── tasks/
     │   ├── T0001-*.json    # Task
     │   └── T0001-*.md      # rendered, derived
+    ├── outcomes/
+    │   ├── O0001-*.json    # Outcome
+    │   └── O0001-*.md      # rendered, derived
     └── index.html          # rendered, derived
 ```
 
@@ -107,6 +111,39 @@ A beads-style work unit.
 | `external_ref` | object? | Set at handoff. `{ system: "linear" \| "github" \| "plane" \| "jira" \| "other", id, url? }`. |
 | `created_at`, `updated_at` | ISO datetime | |
 
+## Outcome (`dr/outcomes/<id>.json`)
+
+A post-handoff observation that an accepted decision did or didn't hold up. Outcomes close the feedback loop between a DR and reality.
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | `"O0001-slug"` | Composite identifier. |
+| `number` | integer ≥1 | Monotonic per project (separate counter from decisions/tasks). |
+| `slug` | string | Kebab-case. |
+| `decision_id` | DecisionId | The accepted decision this observes. |
+| `status` | enum | `pending \| validated \| invalidated \| inconclusive`. |
+| `observation` | string | Free-form prose. |
+| `metric` | string? | Optional structured metric, e.g., `"p99 latency 290ms"`. |
+| `evidence` | string[] | URLs, dashboards, file refs. |
+| `recorded_by` | `"agent" \| "human"` | |
+| `recorded_actor` | string? | |
+| `recorded_at`, `updated_at` | ISO datetime | |
+| `tags` | string[] | |
+
+Outcomes are first-class entities, never nested in Decisions. This keeps decisions immutable after sign-off and supports many outcomes per decision.
+
+## EmbeddingCache (`.dr/cache/embeddings.json`)
+
+Vector cache for `dr_search_decisions`. Written on every `dr_accept_decision`. Hash-keyed so unchanged decisions skip re-embedding.
+
+| Field | Type | Notes |
+|---|---|---|
+| `version` | `"1"` | Schema version. |
+| `default_model` | string | The embedding model used when entries were written. |
+| `entries` | record | Keyed by `decision_id` → `{ decision_id, model, dim, hash, vector, embedded_at }`. |
+
+The cache is `.dr/cache/`-resident and gitignored — it's a derived artifact, regenerable by `dr_reindex_embeddings`.
+
 ## PipelineState (`.dr/state.json`)
 
 Internal pipeline bookkeeping. Never edit by hand.
@@ -117,7 +154,7 @@ Internal pipeline bookkeeping. Never edit by hand.
 | `project_id` | string | Matches `project.json.id`. |
 | `phase` | phase enum | Mirrors `project.status` but the pipeline writes this. |
 | `effective_gate_config` | object | Materialized preset + overrides. |
-| `next_decision_seq`, `next_task_seq` | integer ≥1 | Monotonic counters. |
+| `next_decision_seq`, `next_task_seq`, `next_outcome_seq` | integer ≥1 | Monotonic counters. |
 | `pending_questions` | array | Open questions the agent surfaced. |
 | `gate_failures` | array | History of failed advance attempts (for debugging). |
 | `last_event_at`, `last_render_at` | ISO datetime? | |
@@ -132,14 +169,14 @@ One JSON line per pipeline action. Append-only audit log.
 | `actor` | `"agent" \| "human" \| "system"` | |
 | `actor_name` | string? | |
 | `kind` | enum | See below. |
-| `entity_kind` | `"project" \| "decision" \| "task" \| "phase" \| "question"`? | |
+| `entity_kind` | `"project" \| "decision" \| "task" \| "outcome" \| "phase" \| "question"`? | |
 | `entity_id` | string? | |
 | `payload` | object? | Event-specific. |
 | `correlation_id` | string? | Groups related events. |
 
 ### Event kinds
 
-`project_initialized`, `phase_advanced`, `phase_advance_blocked`, `scope_updated`, `decision_proposed`, `decision_updated`, `decision_reviewed`, `decision_accepted`, `decision_rejected`, `task_proposed`, `task_updated`, `task_status_changed`, `graph_validated`, `gate_check_passed`, `gate_check_failed`, `question_asked`, `question_answered`, `seed_loaded`, `render_run`, `export_started`, `export_completed`, `export_failed`, `sign_off_recorded`.
+`project_initialized`, `phase_advanced`, `phase_advance_blocked`, `scope_updated`, `decision_proposed`, `decision_updated`, `decision_reviewed`, `decision_accepted`, `decision_rejected`, `task_proposed`, `task_updated`, `task_status_changed`, `graph_validated`, `gate_check_passed`, `gate_check_failed`, `question_asked`, `question_answered`, `seed_loaded`, `render_run`, `export_started`, `export_completed`, `export_failed`, `sign_off_recorded`, `outcome_recorded`, `outcome_status_changed`, `outcome_updated`, `embeddings_indexed`, `embeddings_index_failed`.
 
 ## ID conventions
 
@@ -147,6 +184,7 @@ One JSON line per pipeline action. Append-only audit log.
 |---|---|---|
 | Decision | `<4-digit>-<slug>` | `0003-define-the-agent-action-contract` |
 | Task | `T<4-digit>-<slug>` | `T0006-implement-the-rate-limiter` |
+| Outcome | `O<4-digit>-<slug>` | `O0001-latency-held-up` |
 | Project | kebab-slug | `contact-list-deduper` |
 
 Slugs are 2–64 chars, lower-case alphanumerics + dashes, no leading/trailing dash.

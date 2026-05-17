@@ -10,11 +10,34 @@ export interface ScriptedResponse {
   toolCalls?: { name: string; args: Record<string, unknown> }[];
 }
 
+export interface MockOpenAIOptions {
+  /**
+   * Optional deterministic embedding function. Receives the input string,
+   * returns a fixed-dim vector. When omitted, a default hash-based vector is
+   * used so embedding-aware code paths remain exercisable without the model.
+   */
+  embeddingsFor?: (input: string) => number[];
+}
+
+function defaultEmbeddingsFor(input: string): number[] {
+  // Lightweight deterministic vector. Not semantic — just stable per input.
+  const DIM = 16;
+  const out = new Array<number>(DIM).fill(0);
+  for (let i = 0; i < input.length; i++) {
+    out[i % DIM] += input.charCodeAt(i);
+  }
+  const max = Math.max(...out, 1);
+  return out.map((v) => v / max);
+}
+
 /**
  * Build a mock OpenAI client that pops scripted responses off a queue.
  * Each call to chat.completions.create consumes one entry.
  */
-export function makeMockOpenAI(script: ScriptedResponse[]): OpenAI {
+export function makeMockOpenAI(
+  script: ScriptedResponse[],
+  options: MockOpenAIOptions = {}
+): OpenAI {
   let i = 0;
   const queue = [...script];
   let nextId = 1;
@@ -67,11 +90,33 @@ export function makeMockOpenAI(script: ScriptedResponse[]): OpenAI {
     } as unknown as OpenAI.Chat.ChatCompletion;
   };
 
+  const embeddingsFor = options.embeddingsFor ?? defaultEmbeddingsFor;
+
+  const createEmbedding = async (
+    params: OpenAI.EmbeddingCreateParams
+  ): Promise<OpenAI.CreateEmbeddingResponse> => {
+    const inputs = Array.isArray(params.input)
+      ? (params.input as string[])
+      : [params.input as string];
+    const data = inputs.map((text, index) => ({
+      object: "embedding" as const,
+      index,
+      embedding: embeddingsFor(text),
+    }));
+    return {
+      object: "list",
+      model: typeof params.model === "string" ? params.model : "mock",
+      data,
+      usage: { prompt_tokens: 0, total_tokens: 0 },
+    } as OpenAI.CreateEmbeddingResponse;
+  };
+
   // Build a minimal object that quacks like OpenAI for our agent loop.
   const mock = {
     chat: {
       completions: { create },
     },
+    embeddings: { create: createEmbedding },
   } as unknown as OpenAI;
   return mock;
 }

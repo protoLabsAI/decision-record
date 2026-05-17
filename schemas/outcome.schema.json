@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/protoLabsAI/decision-record/schemas/outcome.schema.json",
+  "title": "Outcome",
+  "description": "A post-handoff observation linked to an accepted Decision. Records whether the decision held up in practice. Closes the feedback loop between a DR and reality.",
+  "type": "object",
+  "required": [
+    "id",
+    "number",
+    "slug",
+    "decision_id",
+    "status",
+    "observation",
+    "recorded_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^O[0-9]{4}-[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$",
+      "description": "Composite identifier — 'O' prefix + zero-padded number + slug, e.g., 'O0001-latency-held-up'."
+    },
+    "number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$"
+    },
+    "decision_id": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$",
+      "description": "Forward link to the Decision this outcome observes. Outcomes are not stored on the Decision itself."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "validated", "invalidated", "inconclusive"],
+      "description": "Whether the decision held up. 'pending' = recorded but not yet evaluated."
+    },
+    "observation": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Free-form prose describing what was observed."
+    },
+    "metric": {
+      "type": "string",
+      "description": "Optional structured metric, e.g., 'p99 latency 320ms' or 'churn rate +3%'."
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Links, file references, or other supporting artifacts."
+    },
+    "recorded_by": {
+      "type": "string",
+      "enum": ["agent", "human"]
+    },
+    "recorded_actor": { "type": "string" },
+    "recorded_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "additionalProperties": false
+}

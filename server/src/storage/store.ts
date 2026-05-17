@@ -10,8 +10,12 @@ import { existsSync } from "node:fs";
 import {
   Decision,
   DecisionSchema,
+  EmbeddingCache,
+  EmbeddingCacheSchema,
   Event,
   EventSchema,
+  Outcome,
+  OutcomeSchema,
   PipelineState,
   PipelineStateSchema,
   Project,
@@ -22,6 +26,8 @@ import {
 import {
   decisionFile,
   decisionMarkdown,
+  outcomeFile,
+  outcomeMarkdown,
   pathsFor,
   ProjectPaths,
   taskFile,
@@ -41,6 +47,7 @@ export class Store {
     await mkdir(this.paths.tracked, { recursive: true });
     await mkdir(this.paths.decisions, { recursive: true });
     await mkdir(this.paths.tasks, { recursive: true });
+    await mkdir(this.paths.outcomes, { recursive: true });
     if (!existsSync(this.paths.gitignore)) {
       await writeFile(this.paths.gitignore, "*\n!.gitignore\n", "utf8");
     }
@@ -151,6 +158,59 @@ export class Store {
 
   async writeTaskMarkdown(id: string, body: string): Promise<void> {
     await writeFile(taskMarkdown(this.paths, id), body, "utf8");
+  }
+
+  async listOutcomes(): Promise<Outcome[]> {
+    let entries: string[];
+    try {
+      entries = await readdir(this.paths.outcomes);
+    } catch {
+      return [];
+    }
+    const out: Outcome[] = [];
+    for (const entry of entries) {
+      if (!entry.endsWith(".json")) continue;
+      const raw = await readFile(outcomeFile(this.paths, entry.replace(/\.json$/, "")), "utf8");
+      out.push(OutcomeSchema.parse(JSON.parse(raw)));
+    }
+    out.sort((a, b) => a.number - b.number);
+    return out;
+  }
+
+  async readOutcome(id: string): Promise<Outcome> {
+    const raw = await readFile(outcomeFile(this.paths, id), "utf8");
+    return OutcomeSchema.parse(JSON.parse(raw));
+  }
+
+  async writeOutcome(outcome: Outcome): Promise<void> {
+    const validated = OutcomeSchema.parse(outcome);
+    await writeFile(
+      outcomeFile(this.paths, validated.id),
+      JSON.stringify(validated, null, 2) + "\n",
+      "utf8"
+    );
+  }
+
+  async writeOutcomeMarkdown(id: string, body: string): Promise<void> {
+    await writeFile(outcomeMarkdown(this.paths, id), body, "utf8");
+  }
+
+  async readEmbeddings(): Promise<EmbeddingCache | null> {
+    try {
+      const raw = await readFile(this.paths.embeddings_cache, "utf8");
+      return EmbeddingCacheSchema.parse(JSON.parse(raw));
+    } catch {
+      return null;
+    }
+  }
+
+  async writeEmbeddings(cache: EmbeddingCache): Promise<void> {
+    const validated = EmbeddingCacheSchema.parse(cache);
+    await writeFile(
+      this.paths.embeddings_cache,
+      JSON.stringify(validated, null, 2) + "\n",
+      "utf8"
+    );
   }
 
   async writeIndexHtml(body: string): Promise<void> {

@@ -4,6 +4,8 @@ import { registerTaskTools } from "./tasks.js";
 import { registerSeedTools } from "./seeds.js";
 import { registerRenderTools } from "./render.js";
 import { registerHandoffTools } from "./handoff.js";
+import { registerOutcomeTools } from "./outcomes.js";
+import { registerSearchTools } from "./search.js";
 
 export function registerAllTools(): void {
   registerPipelineTools();
@@ -12,4 +14,6 @@ export function registerAllTools(): void {
   registerSeedTools();
   registerRenderTools();
   registerHandoffTools();
+  registerOutcomeTools();
+  registerSearchTools();
 }
