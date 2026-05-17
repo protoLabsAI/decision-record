@@ -1,0 +1,13 @@
+{
+  "name": "decision-record",
+  "description": "Idea-to-MVP planning pipeline. Drives complex engineering work through hard-gated phases (intake → scope → decisions → tasks → handoff), enforcing decision records and a beads-style task graph along the way. Hands off to Linear or to the filesystem.",
+  "author": {
+    "name": "Josh Mabry",
+    "email": "josh@protolabs.studio",
+    "url": "https://protolabs.studio"
+  },
+  "homepage": "https://github.com/protoLabsAI/decision-record",
+  "repository": "https://github.com/protoLabsAI/decision-record",
+  "license": "MIT",
+  "version": "0.1.0"
+}

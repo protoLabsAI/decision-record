@@ -1,0 +1,70 @@
+{
+  "name": "data-store",
+  "title": "Choose the primary data store",
+  "template_variant": "vendor",
+  "description": "Pick the primary persistent store. Drives schema discipline, query model, scaling characteristics, and ops burden.",
+  "tags": ["foundation", "data", "persistence"],
+  "keywords": [
+    "database",
+    "data store",
+    "postgres",
+    "sqlite",
+    "mongodb",
+    "mysql",
+    "dynamodb",
+    "supabase",
+    "neon",
+    "planetscale",
+    "redis",
+    "kv",
+    "storage",
+    "persistence"
+  ],
+  "starter": {
+    "summary": "Decide the primary persistence layer for the project.",
+    "issue": "The data model is sticky — switching stores after launch is expensive. Picking the right shape (relational vs document vs KV) and the right vendor (self-hosted vs managed) early matters.",
+    "assumptions": [
+      "Workload shape (read-heavy vs write-heavy, OLTP vs OLAP) is understood.",
+      "Backup/restore and migration tolerances are known.",
+      "Team has comfort with at least one of the candidates."
+    ],
+    "constraints": [
+      "Compliance: data residency, encryption-at-rest requirements.",
+      "Budget for managed-service spend.",
+      "Latency budget for queries.",
+      "Schema flexibility needs (rigid vs evolving)."
+    ],
+    "positions": [
+      {
+        "title": "PostgreSQL (self-hosted or managed)",
+        "description": "Relational. JSONB support gives flexibility when needed.",
+        "pros": ["Mature", "ACID guarantees", "JSONB for flexible fields", "Huge ecosystem", "Best-in-class extensions"],
+        "cons": ["Operational overhead if self-hosted", "Scaling writes requires sharding"]
+      },
+      {
+        "title": "SQLite (embedded or with Litestream/Turso)",
+        "description": "File-based SQL. Modern variants (Turso, libSQL) support replication.",
+        "pros": ["Zero ops overhead", "Local-first friendly", "Extremely fast for small data", "No network hop"],
+        "cons": ["Single-writer limit", "Replication needs add-on", "Less rich tooling than Postgres"]
+      },
+      {
+        "title": "Managed Postgres (Supabase / Neon / RDS)",
+        "description": "PostgreSQL as a service. No ops, more $$.",
+        "pros": ["No ops", "Auto-backups", "Connection pooling included (some)"],
+        "cons": ["Vendor lock-in (mild)", "Cost scales with usage", "Connection limits on cheaper tiers"]
+      },
+      {
+        "title": "MongoDB or other document store",
+        "description": "Schema-flexible document storage.",
+        "pros": ["Schema flexibility", "Good for nested/varying shapes", "Horizontal scaling story"],
+        "cons": ["Weaker ad-hoc query story", "ACID requires care", "Less universal than SQL"]
+      }
+    ],
+    "implications": [
+      "Migration strategy (e.g., Drizzle, Prisma, raw SQL, ORM choice) follows.",
+      "Backup and DR playbooks need to be specified.",
+      "Local dev story needs an answer (Docker postgres? sqlite file? mocked?)."
+    ]
+  },
+  "notes_for_agent": "Ask whether the data is structured/relational or sparse/varying. Ask about expected scale (rows, queries/sec). If the project is a single-tenant local-first tool, SQLite is usually right. If it's a multi-tenant web app, managed Postgres is usually right. Don't offer NoSQL unless the data really warrants it."
+}

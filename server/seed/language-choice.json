@@ -1,0 +1,70 @@
+{
+  "name": "language-choice",
+  "title": "Choose the primary implementation language",
+  "template_variant": "architecture",
+  "description": "Pick the main programming language for the project. Drives hiring profile, library ecosystem, runtime characteristics, and tooling.",
+  "tags": ["foundation", "architecture", "stack"],
+  "keywords": [
+    "language",
+    "programming",
+    "typescript",
+    "javascript",
+    "python",
+    "go",
+    "rust",
+    "ruby",
+    "java",
+    "kotlin",
+    "swift",
+    "stack",
+    "runtime"
+  ],
+  "starter": {
+    "summary": "Decide the primary implementation language for the project.",
+    "issue": "Every other foundational decision (runtime, package manager, framework choices, testing tools) flows from the language choice. Picking this early and explicitly avoids drift.",
+    "assumptions": [
+      "Team has existing language strengths to lean on.",
+      "Project lifespan is long enough that hiring and onboarding matter.",
+      "Ecosystem maturity matters for the project's domain."
+    ],
+    "constraints": [
+      "Team's current expertise.",
+      "Target runtime environments (browser, server, native, embedded).",
+      "Performance and memory budgets.",
+      "Licensing or compliance restrictions on language ecosystems."
+    ],
+    "positions": [
+      {
+        "title": "TypeScript",
+        "description": "Strongly typed JavaScript. Best for full-stack web work, ubiquitous tooling.",
+        "pros": ["Ubiquitous in web", "Strong types catch errors early", "Massive ecosystem", "Frontend/backend code sharing"],
+        "cons": ["Build step overhead", "Type system can be over-engineered", "Slower than native languages for hot paths"]
+      },
+      {
+        "title": "Python",
+        "description": "Dynamic, batteries-included. Best for data work, scripting, ML, fast prototypes.",
+        "pros": ["Excellent ML/data ecosystem", "Fast to write", "Readable", "Huge stdlib"],
+        "cons": ["Slow runtime without C extensions", "GIL limits concurrency", "Dynamic typing → runtime errors"]
+      },
+      {
+        "title": "Go",
+        "description": "Statically typed, compiled, built for concurrent services.",
+        "pros": ["Simple language", "Single binary deployment", "Strong concurrency primitives", "Fast compile times"],
+        "cons": ["Generics still maturing", "Verbose error handling", "Less rich third-party ecosystem than JS/Python"]
+      },
+      {
+        "title": "Rust",
+        "description": "Memory-safe systems language. Best for performance-critical or systems work.",
+        "pros": ["No GC, predictable performance", "Memory safety", "Excellent tooling (cargo)", "Strong types"],
+        "cons": ["Steep learning curve", "Slower to ship initial features", "Compile times can be long"]
+      }
+    ],
+    "implications": [
+      "Hiring profile shifts to match the chosen language.",
+      "Library ecosystem and framework choices are bounded by the language.",
+      "Runtime target follows (e.g., Node for TS, Python interpreter, Go binary, Rust binary).",
+      "CI/CD and tooling must support the chosen language."
+    ]
+  },
+  "notes_for_agent": "Before instantiating, ask: what does the team know best? What's the workload (web app vs data pipeline vs systems tool)? What's the deployment target? Customize 'positions' to drop options that don't apply and add language-specific framework expectations. Stretch the assumptions section to be project-specific."
+}

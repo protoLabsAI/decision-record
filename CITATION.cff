@@ -1,20 +1,37 @@
 cff-version: 1.2.0
-title: Decision record (DR)
+title: decision-record (idea-to-MVP planning pipeline)
 message: >-
-  If you use this work and you want to cite it,
-  then you can use the metadata from this file.
+  If you use this work and you want to cite it, you can use the metadata
+  from this file. Please also cite the upstream canonical decision-record
+  concept by Joel Parker Henderson (see "references" below).
 type: software
 authors:
-  - given-names: Joel Parker
-    family-names: Henderson
-    email: joel@joelparkerhenderson.com
-    affiliation: joelparkerhenderson.com
-    orcid: 'https://orcid.org/0009-0000-4681-282X'
+  - given-names: Josh
+    family-names: Mabry
+    email: josh@protolabs.studio
+    affiliation: protoLabs Studio
 identifiers:
   - type: url
-    value: 'https://github.com/joelparkerhenderson/decision-record/'
-    description: Decision record (DR)
-repository-code: 'https://github.com/joelparkerhenderson/decision-record/'
+    value: 'https://github.com/protoLabsAI/decision-record'
+    description: This fork — decision-record planning pipeline
+repository-code: 'https://github.com/protoLabsAI/decision-record'
 abstract: >-
-  Decision record (DR)
-license: See license file
+  A Claude Code plugin and MCP server that drives idea-to-MVP planning for
+  complex engineering work. It hard-gates a pipeline of phases (intake, scope,
+  decisions, task graph, handoff) and refuses to release a plan until every
+  decision is accepted and every task is decomposed.
+license: MIT
+references:
+  - type: software
+    title: Decision record (DR)
+    authors:
+      - given-names: Joel Parker
+        family-names: Henderson
+        email: joel@joelparkerhenderson.com
+        affiliation: joelparkerhenderson.com
+        orcid: 'https://orcid.org/0009-0000-4681-282X'
+    repository-code: 'https://github.com/joelparkerhenderson/decision-record/'
+    abstract: >-
+      The canonical concept, template, and teamwork model for decision
+      records — preserved in this fork at docs/upstream-canon.md and
+      templates/canonical.md.

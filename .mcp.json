@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "decision-record": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/server/dist/index.js"],
+      "env": {
+        "DR_LOG_LEVEL": "info"
+      }
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "name": "auth-method",
+  "title": "Choose the authentication approach",
+  "template_variant": "architecture",
+  "description": "Decide how users authenticate: password, OAuth providers, magic links, passkeys, SSO. Drives compliance posture, UX, and which integrations are needed.",
+  "tags": ["security", "users", "foundation"],
+  "keywords": [
+    "auth",
+    "authentication",
+    "login",
+    "oauth",
+    "saml",
+    "passkey",
+    "magic link",
+    "passwordless",
+    "sso",
+    "google sign in",
+    "github auth",
+    "clerk",
+    "auth0",
+    "supabase auth",
+    "next-auth"
+  ],
+  "starter": {
+    "summary": "Decide how users authenticate.",
+    "issue": "Auth has a long tail: password reset, MFA, session management, account recovery. Choose a path early so account state and access control follow consistently.",
+    "assumptions": [
+      "User type is understood (consumer, enterprise, internal).",
+      "Compliance requirements (SOC2, HIPAA, GDPR) are known."
+    ],
+    "constraints": [
+      "Enterprise customers may require SAML SSO.",
+      "Mobile/native apps complicate redirect-based flows.",
+      "Budget for hosted auth providers.",
+      "Risk tolerance for self-hosting credentials."
+    ],
+    "positions": [
+      {
+        "title": "Hosted auth (Clerk / Auth0 / WorkOS)",
+        "description": "Outsource user mgmt to a SaaS. Drop-in UI and APIs.",
+        "pros": ["Fast to ship", "Compliance lift", "Best-in-class flows", "SSO and MFA in the box"],
+        "cons": ["Monthly cost scales with MAU", "Vendor lock-in", "Less customizable UX"]
+      },
+      {
+        "title": "Self-hosted auth library (NextAuth / Lucia / better-auth)",
+        "description": "Run auth yourself with a battle-tested library.",
+        "pros": ["No per-MAU cost", "Full control", "No external dependency in critical path"],
+        "cons": ["You own the security surface", "Implementing SSO/SAML is hard", "More ops"]
+      },
+      {
+        "title": "Passwordless only (magic links + passkeys)",
+        "description": "Email magic links and/or WebAuthn passkeys, no passwords stored.",
+        "pros": ["No password storage", "Modern UX", "Phishing-resistant (passkeys)"],
+        "cons": ["Email deliverability dependence", "Account recovery is harder", "Less familiar UX for some users"]
+      },
+      {
+        "title": "OAuth providers only (Google/GitHub/etc.)",
+        "description": "Federate to social/identity providers — no in-house auth.",
+        "pros": ["Zero password mgmt", "Familiar UX", "Free at small scale"],
+        "cons": ["Excludes users without those accounts", "Provider outages affect you", "Per-provider TOS constraints"]
+      }
+    ],
+    "implications": [
+      "Determines session model (JWT vs DB-backed sessions).",
+      "Determines mailer dependency if magic links are used.",
+      "Drives compliance work: cookie banners, privacy policy, data-export tooling.",
+      "Account-deletion flow needs to be specified."
+    ]
+  },
+  "notes_for_agent": "Ask: consumer or B2B? Will enterprise customers demand SSO/SAML in 6 months? Is the team comfortable owning auth surface? For B2B SaaS aiming at enterprise, hosted auth (Clerk/WorkOS) is usually right. For tiny side projects, OAuth-only is usually fine. If passkeys are on the table, validate device support assumptions."
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/protoLabsAI/decision-record/schemas/event.schema.json",
+  "title": "Event",
+  "description": "One entry in .dr/events.jsonl — append-only audit log of every pipeline action.",
+  "type": "object",
+  "required": ["at", "actor", "kind"],
+  "properties": {
+    "at": { "type": "string", "format": "date-time" },
+    "actor": {
+      "type": "string",
+      "enum": ["agent", "human", "system"]
+    },
+    "actor_name": {
+      "type": "string",
+      "description": "Optional identifier for the actor (agent name, user handle)."
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "project_initialized",
+        "phase_advanced",
+        "phase_advance_blocked",
+        "scope_updated",
+        "decision_proposed",
+        "decision_updated",
+        "decision_reviewed",
+        "decision_accepted",
+        "decision_rejected",
+        "task_proposed",
+        "task_updated",
+        "task_status_changed",
+        "graph_validated",
+        "gate_check_passed",
+        "gate_check_failed",
+        "question_asked",
+        "question_answered",
+        "seed_loaded",
+        "render_run",
+        "export_started",
+        "export_completed",
+        "export_failed",
+        "sign_off_recorded"
+      ]
+    },
+    "entity_kind": {
+      "type": "string",
+      "enum": ["project", "decision", "task", "phase", "question"]
+    },
+    "entity_id": { "type": "string" },
+    "payload": {
+      "type": "object",
+      "description": "Event-specific data. Free-form but should be machine-readable.",
+      "additionalProperties": true
+    },
+    "correlation_id": {
+      "type": "string",
+      "description": "Groups related events (e.g., a single agent turn)."
+    }
+  },
+  "additionalProperties": false
+}

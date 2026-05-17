@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/protoLabsAI/decision-record/schemas/project.schema.json",
+  "title": "Project",
+  "description": "The top-level MVP manifest for a project being planned through the decision-record pipeline.",
+  "type": "object",
+  "required": ["id", "title", "created_at", "updated_at", "effort_level", "status"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable identifier (kebab-case slug derived from title).",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$"
+    },
+    "title": {
+      "type": "string",
+      "description": "Human-readable project title.",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "description": {
+      "type": "string",
+      "description": "Intake-phase summary of the idea. Refined during scoping."
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "effort_level": {
+      "type": "string",
+      "enum": ["poc", "mvp", "full"],
+      "description": "Calibrates gate strictness across all phases."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "intake",
+        "scoping",
+        "deciding",
+        "decomposing",
+        "handing-off",
+        "handed-off"
+      ],
+      "description": "Current pipeline phase. Transitions only via dr_advance, which evaluates gates."
+    },
+    "scope": {
+      "type": "object",
+      "description": "Negotiated MVP scope. Populated during scoping phase.",
+      "properties": {
+        "in_scope": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Capabilities the MVP MUST ship."
+        },
+        "out_of_scope": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Explicit non-goals — capabilities deliberately deferred."
+        },
+        "success_criteria": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Measurable signals that the MVP succeeded."
+        },
+        "nice_to_have": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional capabilities that may be included if time/scope permits."
+        }
+      }
+    },
+    "sign_offs": {
+      "type": "array",
+      "description": "Phase-level sign-offs. Each entry records who approved a phase transition.",
+      "items": {
+        "type": "object",
+        "required": ["phase", "by", "at"],
+        "properties": {
+          "phase": {
+            "type": "string",
+            "enum": ["scoping", "deciding", "decomposing", "handing-off"]
+          },
+          "by": { "type": "string", "enum": ["agent", "human"] },
+          "actor": {
+            "type": "string",
+            "description": "Optional name/identifier of the actor."
+          },
+          "at": { "type": "string", "format": "date-time" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "handoff": {
+      "type": "object",
+      "description": "Recorded after the handing-off → handed-off transition succeeds.",
+      "properties": {
+        "target": { "type": "string", "enum": ["linear", "filesystem"] },
+        "target_id": {
+          "type": "string",
+          "description": "External identifier — e.g., Linear project ID."
+        },
+        "target_url": { "type": "string", "format": "uri" },
+        "exported_at": { "type": "string", "format": "date-time" },
+        "issue_count": { "type": "integer", "minimum": 0 },
+        "document_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "gate_config": {
+      "$ref": "#/definitions/GateConfig"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional free-form tags for filtering/grouping."
+    }
+  },
+  "definitions": {
+    "GateConfig": {
+      "type": "object",
+      "description": "Tier preset + per-knob overrides. Effective values are computed by applying overrides on top of preset.",
+      "properties": {
+        "preset": {
+          "type": "string",
+          "enum": ["poc", "mvp", "full"]
+        },
+        "overrides": {
+          "type": "object",
+          "properties": {
+            "decisions_required_status": {
+              "type": "string",
+              "enum": ["accepted", "any"],
+              "description": "What status DRs must hold for the deciding gate to pass."
+            },
+            "review_required_phases": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["scoping", "deciding", "decomposing"]
+              },
+              "description": "Phases at which an antagonistic review must run before advancing."
+            },
+            "review_required_per_decision": {
+              "type": "boolean",
+              "description": "If true, every DR must be reviewed before acceptance, not just gates."
+            },
+            "max_task_estimate_hours": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Leaf tasks may not exceed this estimate. Higher → looser gate."
+            },
+            "require_human_signoff_phases": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["scoping", "deciding", "decomposing", "handing-off"]
+              },
+              "description": "Phases that require human sign-off (not agent self-approval)."
+            },
+            "min_decisions": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Minimum number of decisions before the deciding gate can pass."
+            },
+            "min_tasks": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Minimum number of tasks before the decomposing gate can pass."
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

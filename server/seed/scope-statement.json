@@ -1,0 +1,57 @@
+{
+  "name": "scope-statement",
+  "title": "Define the MVP scope",
+  "template_variant": "scoping",
+  "description": "The foundational scoping decision. Records what the MVP must ship, what it explicitly won't, and how success is measured. Usually the first DR a project creates.",
+  "tags": ["scoping", "foundation"],
+  "keywords": [
+    "scope",
+    "mvp",
+    "minimum viable product",
+    "boundaries",
+    "in scope",
+    "out of scope",
+    "success criteria",
+    "non goals",
+    "goals"
+  ],
+  "starter": {
+    "summary": "Explicit MVP scope boundaries — what ships, what doesn't, and what 'done' means.",
+    "issue": "Without explicit scope, work expands silently until the project never ships. Pin the MVP perimeter so the team can disagree-and-commit and so the decomposing phase has a clear target.",
+    "assumptions": [
+      "The team has a shared rough idea of what the project is.",
+      "Stakeholders are reachable for scope disputes."
+    ],
+    "constraints": [
+      "Timeline available for the MVP.",
+      "Team headcount.",
+      "Budget for tools and infrastructure."
+    ],
+    "positions": [
+      {
+        "title": "Lean MVP (smallest thing that proves the core hypothesis)",
+        "description": "Ship the minimum slice that lets us learn whether the idea is right.",
+        "pros": ["Fastest time to learning", "Lowest risk", "Easier to kill if wrong"],
+        "cons": ["Looks unfinished", "Might miss the 'aha' moment if too thin"]
+      },
+      {
+        "title": "Walking-skeleton MVP (end-to-end thin slice across all layers)",
+        "description": "All systems touched, but each only at minimum depth.",
+        "pros": ["Validates architecture", "Surfaces integration issues early", "Easier to extend"],
+        "cons": ["More upfront work than lean", "Still misses depth users may need"]
+      },
+      {
+        "title": "Polished MVP (feature-thin but UX-polished)",
+        "description": "Few features but they feel finished.",
+        "pros": ["Demos well", "Lower friction for early users", "Strong first impression"],
+        "cons": ["Slower to ship", "Polish on wrong features is waste"]
+      }
+    ],
+    "implications": [
+      "Defines the perimeter of acceptable feature work in the deciding and decomposing phases.",
+      "Out-of-scope items become explicit Future Work artifacts.",
+      "Success criteria gate the eventual launch decision."
+    ]
+  },
+  "notes_for_agent": "This seed should be the FIRST decision instantiated in nearly every project. Customize the issue with the actual project description. The selected position is usually 'walking-skeleton MVP' for technical projects with novel architecture; 'lean MVP' for hypothesis-driven product bets; 'polished MVP' for projects in crowded markets where first impression matters."
+}

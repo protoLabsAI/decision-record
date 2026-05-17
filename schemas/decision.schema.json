@@ -1,0 +1,206 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/protoLabsAI/decision-record/schemas/decision.schema.json",
+  "title": "Decision",
+  "description": "A decision record (DR) — a single significant choice, with context, alternatives, and rationale.",
+  "type": "object",
+  "required": [
+    "id",
+    "number",
+    "slug",
+    "title",
+    "status",
+    "template_variant",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Composite identifier: zero-padded number + slug, e.g., '0001-language-choice'.",
+      "pattern": "^[0-9]{4}-[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$"
+    },
+    "number": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Monotonically increasing within a project."
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short present-tense imperative. Up to 50 characters.",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "rfc",
+        "proposed",
+        "accepted",
+        "rejected",
+        "deprecated",
+        "superseded"
+      ],
+      "description": "Lifecycle state. Only 'accepted' satisfies the deciding gate."
+    },
+    "template_variant": {
+      "type": "string",
+      "enum": [
+        "canonical",
+        "lightweight",
+        "scoping",
+        "vendor",
+        "architecture",
+        "data-model"
+      ],
+      "description": "Which template shape this DR follows. Affects required fields and renderer."
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "summary": {
+      "type": "string",
+      "description": "One-line headline of the decision (or current state if not yet accepted)."
+    },
+    "issue": {
+      "type": "string",
+      "description": "Why this decision needs to be made. The 'problem' framing."
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Premises taken as true at decision time."
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Environmental limits — platform, vendor, time, cost, etc."
+    },
+    "positions": {
+      "type": "array",
+      "description": "Candidate options considered. Facts and data, not opinions.",
+      "items": { "$ref": "#/definitions/Position" }
+    },
+    "opinions": {
+      "type": "array",
+      "description": "Stakeholder/reviewer opinions on the positions.",
+      "items": { "$ref": "#/definitions/Opinion" }
+    },
+    "argument": {
+      "type": "string",
+      "description": "The selection rationale — why the chosen position won."
+    },
+    "selected_position": {
+      "type": "string",
+      "description": "Title of the selected position (must match an entry in `positions`)."
+    },
+    "implications": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Downstream consequences — new requirements, follow-on decisions, etc."
+    },
+    "depends_on": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Decision IDs that must be accepted before this one can be."
+    },
+    "related_decisions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Decision IDs referenced but not blocking."
+    },
+    "related_artifacts": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "External links or repo-relative paths."
+    },
+    "review": {
+      "type": "array",
+      "description": "Antagonistic-review passes. Each entry is one reviewer's verdict.",
+      "items": { "$ref": "#/definitions/Review" }
+    },
+    "sign_off": {
+      "type": "object",
+      "description": "Final acceptance record. Present when status === 'accepted'.",
+      "required": ["by", "at"],
+      "properties": {
+        "by": { "type": "string", "enum": ["agent", "human"] },
+        "actor": { "type": "string" },
+        "at": { "type": "string", "format": "date-time" },
+        "notes": { "type": "string" }
+      }
+    },
+    "superseded_by": {
+      "type": "string",
+      "description": "ID of the DR that replaces this one (if status === 'superseded')."
+    },
+    "seed_origin": {
+      "type": "string",
+      "description": "Seed entry this DR was instantiated from (e.g., 'language-choice')."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+  "definitions": {
+    "Position": {
+      "type": "object",
+      "required": ["title"],
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "pros": { "type": "array", "items": { "type": "string" } },
+        "cons": { "type": "array", "items": { "type": "string" } },
+        "cost": {
+          "type": "object",
+          "description": "Optional cost breakdown (free-form).",
+          "additionalProperties": true
+        },
+        "links": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "Opinion": {
+      "type": "object",
+      "required": ["author", "by", "at", "body"],
+      "properties": {
+        "author": { "type": "string" },
+        "by": { "type": "string", "enum": ["agent", "human"] },
+        "at": { "type": "string", "format": "date-time" },
+        "body": { "type": "string" },
+        "position_ref": {
+          "type": "string",
+          "description": "Title of the position this opinion is about, if any."
+        }
+      }
+    },
+    "Review": {
+      "type": "object",
+      "required": ["reviewer", "lens", "verdict", "at"],
+      "properties": {
+        "reviewer": { "type": "string" },
+        "lens": {
+          "type": "string",
+          "enum": ["operational", "strategic", "security", "cost", "user-impact"],
+          "description": "Reviewer's perspective."
+        },
+        "score": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Confidence in the decision (1=blocking concerns, 5=enthusiastic)."
+        },
+        "concerns": { "type": "array", "items": { "type": "string" } },
+        "verdict": { "type": "string", "enum": ["pass", "block"] },
+        "at": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

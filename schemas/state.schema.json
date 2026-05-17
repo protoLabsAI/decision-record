@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/protoLabsAI/decision-record/schemas/state.schema.json",
+  "title": "PipelineState",
+  "description": "Internal pipeline state held in .dr/state.json — durable across sessions.",
+  "type": "object",
+  "required": ["project_id", "phase", "schema_version"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semver. Bump on breaking layout changes.",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "project_id": { "type": "string" },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "intake",
+        "scoping",
+        "deciding",
+        "decomposing",
+        "handing-off",
+        "handed-off"
+      ]
+    },
+    "effective_gate_config": {
+      "type": "object",
+      "description": "Materialized gate config — preset values merged with overrides for fast lookup.",
+      "properties": {
+        "decisions_required_status": { "type": "string", "enum": ["accepted", "any"] },
+        "review_required_phases": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["scoping", "deciding", "decomposing"] }
+        },
+        "review_required_per_decision": { "type": "boolean" },
+        "max_task_estimate_hours": { "type": "number" },
+        "require_human_signoff_phases": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "min_decisions": { "type": "integer" },
+        "min_tasks": { "type": "integer" }
+      }
+    },
+    "next_decision_seq": { "type": "integer", "minimum": 1 },
+    "next_task_seq": { "type": "integer", "minimum": 1 },
+    "pending_questions": {
+      "type": "array",
+      "description": "Open questions the agent has surfaced and is waiting on the human for.",
+      "items": {
+        "type": "object",
+        "required": ["id", "phase", "asked_at", "text"],
+        "properties": {
+          "id": { "type": "string" },
+          "phase": { "type": "string" },
+          "asked_at": { "type": "string", "format": "date-time" },
+          "text": { "type": "string" },
+          "answered": { "type": "boolean" },
+          "answered_at": { "type": "string", "format": "date-time" },
+          "answer": { "type": "string" }
+        }
+      }
+    },
+    "gate_failures": {
+      "type": "array",
+      "description": "History of failed dr_advance attempts. Useful for the wizard agent to remember what to fix.",
+      "items": {
+        "type": "object",
+        "required": ["phase_from", "phase_to", "at", "reasons"],
+        "properties": {
+          "phase_from": { "type": "string" },
+          "phase_to": { "type": "string" },
+          "at": { "type": "string", "format": "date-time" },
+          "reasons": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "last_event_at": { "type": "string", "format": "date-time" },
+    "last_render_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

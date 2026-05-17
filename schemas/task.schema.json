@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/protoLabsAI/decision-record/schemas/task.schema.json",
+  "title": "Task",
+  "description": "A beads-style task node — a unit of implementation work derived from accepted decisions.",
+  "type": "object",
+  "required": [
+    "id",
+    "number",
+    "slug",
+    "title",
+    "status",
+    "created_at",
+    "updated_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Composite identifier — 'T' prefix + zero-padded number + slug, e.g., 'T0001-bootstrap-repo'.",
+      "pattern": "^T[0-9]{4}-[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$"
+    },
+    "number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "description": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["open", "ready", "in_progress", "done", "blocked", "deferred"],
+      "description": "Pre-handoff lifecycle. 'ready' = all deps resolved. Post-handoff lifecycle lives in Linear / target system."
+    },
+    "estimate": {
+      "type": "object",
+      "required": ["unit", "value"],
+      "properties": {
+        "unit": { "type": "string", "enum": ["hours", "days"] },
+        "value": { "type": "number", "minimum": 0 },
+        "confidence": { "type": "string", "enum": ["low", "med", "high"] }
+      }
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Concrete done-when statements. Used by the agent to know when to mark complete."
+    },
+    "depends_on": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Task IDs that must complete before this one can start."
+    },
+    "decision_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Decision IDs this task implements or depends on."
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["p0", "p1", "p2", "p3"],
+      "description": "p0 = must-ship; p3 = nice-to-have."
+    },
+    "labels": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "assignee_hint": {
+      "type": "string",
+      "enum": ["agent", "human", "either"],
+      "description": "Suggested actor type. Final assignment happens in the target system."
+    },
+    "external_ref": {
+      "type": "object",
+      "description": "Populated after handoff with the target-system identifier (e.g., Linear issue).",
+      "properties": {
+        "system": { "type": "string", "enum": ["linear", "github", "plane", "jira", "other"] },
+        "id": { "type": "string" },
+        "url": { "type": "string", "format": "uri" }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}
