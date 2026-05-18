@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for considering a contribution. This project is an early-stage Claude Code plugin + MCP server that turns ideas into ship-ready MVP plans through a hard-gated decision-record pipeline.
+Thank you for considering a contribution. This project is an early-stage Claude Code plugin + OpenCode integration + MCP server that turns ideas into ship-ready MVP plans through a hard-gated decision-record pipeline.
 
 ## Ways to contribute
 
@@ -9,6 +9,7 @@ Thank you for considering a contribution. This project is an early-stage Claude 
 - **Template variants.** New DR variants (under [`templates/`](templates/)) — scoping, vendor, data-model, lightweight, etc. — are useful when an existing variant doesn't fit a real decision you encountered.
 - **Renderer / UI improvements.** The static HTML index ([`server/src/render/`](server/)) is intentionally minimal; richer renderings welcome.
 - **Linear / handoff integrations.** Better mappings between our manifest and Linear's data model, or new handoff targets (Plane, GitHub Projects, Jira).
+- **OpenCode integration.** Agent prompt improvements, new commands, or setup script enhancements.
 - **Documentation.** Real-world examples and case studies under `docs/`.
 
 ## Workflow
