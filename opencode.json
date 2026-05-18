@@ -1,0 +1,70 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "dr-wizard",
+  "mcp": {
+    "decision-record": {
+      "type": "local",
+      "command": ["node", "${workspaceRoot}/server/dist/index.js"],
+      "environment": {
+        "DR_LOG_LEVEL": "info"
+      }
+    }
+  },
+  "agent": {
+    "dr-wizard": {
+      "description": "Orchestrator for the decision-record planning pipeline. Reads current pipeline state and drives the next phase forward — intake, scope, decisions, tasks, handoff.",
+      "mode": "primary",
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "color": "#8B5CF6",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "task": "allow",
+        "todowrite": "allow",
+        "decision-record_*": "allow"
+      }
+    },
+    "dr-skeptic": {
+      "description": "Antagonistic reviewer for decision records. Returns a verdict (pass/block) and concerns from multiple lenses.",
+      "mode": "subagent",
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "color": "#EF4444",
+      "permission": {
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "webfetch": "allow",
+        "edit": "deny",
+        "bash": "deny",
+        "decision-record_*": "allow"
+      }
+    },
+    "dr-decomposer": {
+      "description": "Task graph decomposer. Converts accepted decisions into a dependency-aware task graph with estimates and acceptance criteria.",
+      "mode": "subagent",
+      "model": "anthropic/claude-sonnet-4-20250514",
+      "color": "#3B82F6",
+      "permission": {
+        "read": "allow",
+        "edit": "allow",
+        "bash": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "todowrite": "allow",
+        "decision-record_*": "allow"
+      }
+    }
+  },
+  "command": {
+    "plan": {
+      "template": "Drive the project through the hard-gated decision-record planning pipeline: intake → scope → decisions → task graph → handoff. $ARGUMENTS",
+      "description": "Run the idea-to-MVP planning pipeline with hard-gated phases",
+      "agent": "dr-wizard"
+    }
+  }
+}
