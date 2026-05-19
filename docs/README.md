@@ -26,6 +26,7 @@ The decision-record docs follow the [Diátaxis](https://diataxis.fr) framework �
 
 ### How-to guides
 - [Install the plugin or CLI](how-to/install.md)
+- [Install with OpenCode](how-to/install.md#opencode) — one-step setup for any project
 - [Run the CLI](how-to/run-the-cli.md) — idea, PRD, resume
 - [Configure LLM providers](how-to/configure-providers.md) — OpenAI, OpenRouter, Ollama, vLLM, LiteLLM
 - [Hand off to Linear](how-to/handoff-to-linear.md)

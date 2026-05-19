@@ -20,7 +20,9 @@ You need:
    npm run build
    ```
 
-You do **not** need the Claude Code plugin installed for this tutorial. We will run the CLI directly.
+You do **not** need the Claude Code plugin or OpenCode installed for this tutorial. We will run the CLI directly.
+
+> **Alternative:** If you have [OpenCode](https://opencode.ai) installed, you can use the setup script instead: `./setup-opencode.sh ~/dev/my-first-plan`, then run `opencode` and use `/plan`. See [Install with OpenCode](../how-to/install.md#opencode).
 
 ## Step 1: Pick a working directory
 
@@ -157,6 +159,7 @@ You ran a complete planning pipeline end-to-end. From a one-line idea you produc
 
 ## Next steps
 
+- **Use OpenCode instead of the CLI** — [Install with OpenCode](../how-to/install.md#opencode)
 - **Hand off to Linear instead of filesystem** — [How-to: Hand off to Linear](../how-to/handoff-to-linear.md)
 - **Run with a PRD instead of a one-liner** — [How-to: Run the CLI](../how-to/run-the-cli.md)
 - **Use a different model** — [How-to: Configure LLM providers](../how-to/configure-providers.md)

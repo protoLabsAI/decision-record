@@ -2,7 +2,7 @@
 
 > An idea-to-MVP planning pipeline. Drives complex engineering work — code and architecture — through hard-gated phases that won't release a "ship-ready" plan until every decision is accepted and every task is decomposed.
 
-This repository is a Claude Code plugin + bundled MCP server. It runs inside a fresh or template repo, partners with a human and an AI agent, and produces an executable MVP plan: a scoped manifest, a set of accepted decision records, and a dependency-aware task graph. Output goes to Linear (primary) or stays as filesystem artifacts (fallback).
+This repository is a Claude Code plugin + OpenCode integration + bundled MCP server. It runs inside a fresh or template repo, partners with a human and an AI agent, and produces an executable MVP plan: a scoped manifest, a set of accepted decision records, and a dependency-aware task graph. Output goes to Linear (primary) or stays as filesystem artifacts (fallback).
 
 This project is a derivative of [Joel Parker Henderson's canonical decision-record repo](https://github.com/joelparkerhenderson/decision-record). The canonical explanation of what a DR is and why it matters is preserved at [`docs/explanation/why-decision-records.md`](docs/explanation/why-decision-records.md). What this fork adds is **enforcement**: workflows, tools, and a state machine that make DRs a non-skippable part of planning with an agentic system.
 
@@ -33,8 +33,11 @@ Docs follow the [Diátaxis](https://diataxis.fr) framework — start at [`docs/R
 ```
 decision-record/
 ├── .claude-plugin/         # Claude Code plugin manifest
-├── commands/               # /plan slash command (entry point)
-├── agents/                 # dr-wizard, dr-skeptic, dr-decomposer
+├── commands/               # /plan slash command (Claude Code entry point)
+├── agents/                 # dr-wizard, dr-skeptic, dr-decomposer (Claude Code)
+├── .opencode/              # OpenCode agents and commands
+├── opencode.json           # OpenCode project configuration
+├── setup-opencode.sh       # Script to install into any existing project
 ├── server/                 # MCP server (TypeScript, @modelcontextprotocol/sdk)
 ├── schemas/                # JSON Schemas — project, decision, task, state, event
 ├── templates/              # DR template variants (canonical, scoping, vendor, ...)
@@ -67,9 +70,11 @@ npm install
 npm run build
 ```
 
-Then either:
-- Use the **standalone CLI**: `export OPENAI_API_KEY=… && node dist/cli.js --idea "your idea here"`
-- Use the **Claude Code plugin**: symlink the repo into `~/.claude/plugins/decision-record/` and run `/plan` inside Claude Code.
+Then choose your interface:
+
+- **Standalone CLI**: `export OPENAI_API_KEY=… && node dist/cli.js --idea "your idea here"`
+- **Claude Code plugin**: symlink the repo into `~/.claude/plugins/decision-record/` and run `/plan` inside Claude Code.
+- **OpenCode**: run `./setup-opencode.sh /path/to/your/project` to install the config, agents, and MCP server into any existing repository.
 
 Full install instructions: [`docs/how-to/install.md`](docs/how-to/install.md). First-run walkthrough: [`docs/tutorials/your-first-plan.md`](docs/tutorials/your-first-plan.md).
 
